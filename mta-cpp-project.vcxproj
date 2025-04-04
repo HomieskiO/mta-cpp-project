@@ -28,12 +28,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GameManager.cpp" />
-    <ClCompile Include="src\ioUtils.cpp" />
+    <ClCompile Include="src\IOUtils.cpp" />
     <ClCompile Include="src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GameManager.h" />
-    <ClInclude Include="include\ioUtils.h" />
+    <ClInclude Include="include\IOUtils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
