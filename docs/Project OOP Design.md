@@ -3,23 +3,36 @@
 
 ---
 
-### **GameManager**  
-Handles main menu, game initialization, and pausing  
-*Note for later - maybe should be implemented as a singleton to prevent looping when pausing and resuming.*
+### **MenuManager**  
+Handles main menu, game initialization, pausing, resuming, and quitting the game.
 
 #### **Attributes**:
-- `- isRunning`: bool  
-- `- isPaused`: bool  
+- `- gameManager`: GameManager   
 
 #### **Methods**:
 - `- showInstructionsAndKeys()`
 - `+ openMenu()`
+- `+ intializeGame()`
+
+
+---
+
+### **GameManager**  
+Handles game flow, game state, and game loop
+
+#### **Attributes**:
+- `- isRunning`: bool  
+- `- isPaused`: bool  
+- `- gameObjects`: List<GameObject>
+- `- winner`: Tank
+
+#### **Methods**:
 - `+ startGame()`
 - `+ pauseGame()`
 - `+ resumeGame()`
-- `+ update()`
-- `+ render()` // Maybe can be united with update  
-- `+ gameOver()` // Maybe useless  
+- `+ update()` 
+- `+ gameOver()`
+
 
 ---
 
@@ -43,7 +56,8 @@ Describes all attributes and methods a game object should implement
 - `+ getDirection() : Direction`  
 - `+ setDirection(direction : Direction) : void`  
 - `+ isAlive() : bool`  
-- `+ setState(state : bool) : void`  
+- `+ setState(state : bool) : void`
+- `+ collidesWith(GameObject object) : bool`
 
 ---
 
@@ -51,7 +65,8 @@ Describes all attributes and methods a game object should implement
 Represents a tank in the game  
 
 #### **Attributes**:
-- `- cannon`: Cannon  
+- `- cannon`: Cannon 
+- `- name`: string
 
 #### **Methods**:
 - `+ fire() : void`  

@@ -1,158 +1,73 @@
 #include "GameManager.h"
-#include <conio.h> 
+#include <iostream>
+#include <conio.h>
 #include <windows.h>
-#include "IOUtils.h"
 
 GameManager::GameManager() {
-    isRunning = false;
-    isPaused = false;
+	isRunning = false;
+	isPaused = false;
 }
 
-void GameManager::showInstructionsAndKeys() {
-	clearScreen();
-    std::cout << "==================== TANK BATTLE - GAME INSTRUCTIONS ====================\n\n";
-
-    std::cout << ">> OBJECTIVE <<\n";
-    std::cout << "Each player controls a tank inside a maze. Tanks can move, rotate, and shoot.\n";
-    std::cout << "The goal is to destroy the other tank using shells or mines.\n";
-    std::cout << "Avoid walls and mines! Touching them will end the game.\n\n";
-
-    std::cout << ">> MOVEMENT CONTROLS <<\n";
-    std::cout << "Each tank has 2 tracks. You control each track separately.\n";
-    std::cout << "Movement continues automatically until 'STAY' is pressed.\n";
-    std::cout << "Input is case-insensitive.\n\n";
-
-    std::cout << "Player 1 Controls:\n";
-    std::cout << "  Q - Left Track Forward    A - Left Track Backward\n";
-    std::cout << "  E - Right Track Forward   D - Right Track Backward\n";
-    std::cout << "  S - Stay                  W - Shoot\n\n";
-
-    std::cout << "Player 2 Controls:\n";
-    std::cout << "  U - Left Track Forward    J - Left Track Backward\n";
-    std::cout << "  O - Right Track Forward   L - Right Track Backward\n";
-    std::cout << "  K - Stay                  I - Shoot\n\n";
-
-    std::cout << ">> ROTATION LOGIC <<\n";
-    std::cout << "  - Right track forward only     -> Rotate counter-clockwise (8 steps)\n";
-    std::cout << "  - Right forward + Left back    -> Rotate counter-clockwise (4 steps)\n";
-    std::cout << "  - Left track forward only      -> Rotate clockwise (8 steps)\n";
-    std::cout << "  - Left forward + Right back    -> Rotate clockwise (4 steps)\n\n";
-
-    std::cout << ">> GAME ELEMENTS <<\n";
-    std::cout << "  Tank:          O\n";
-    std::cout << "  Cannon:        | / \\ - (depends on direction)\n";
-    std::cout << "  Wall:          # (takes 2 hits to destroy)\n";
-    std::cout << "  Mine:          @\n";
-    std::cout << "  Shell:         *\n\n";
-
-    std::cout << ">> GAME RULES <<\n";
-    std::cout << "- Tanks die if hit by a shell or step on a mine.\n";
-    std::cout << "- Shells can destroy other shells on contact.\n";
-    std::cout << "- Cannon hit? Tank survives but loses cannon.\n";
-    std::cout << "- Mines are hidden under cannons.\n";
-    std::cout << "- Walls fall after 2 shell hits (optional weakened visual).\n";
-    std::cout << "- Map boundaries wrap around (teleport to other side).\n";
-    std::cout << "- After shooting, a 5-cycle cooldown is applied.\n\n";
-
-    std::cout << ">> PAUSING <<\n";
-    std::cout << "- Press ESC to pause.\n";
-    std::cout << "- While paused: Press ESC again to resume, or X to return to the main menu.\n\n";
-
-    std::cout << "=========================================================================\n";
-    std::cout << "Press any key to return to the menu...\n";
-    _getch();
-}
-
-void GameManager::openMenu() {
-    char choice = 0;
-
-    while (choice != '1' && choice != '8' && choice != '9') {
-		clearScreen();
-        std::cout << "=== Main Menu ===\n";
-        std::cout << "(1) Start a new Game\n";
-        std::cout << "(8) Present instructions and keys\n";
-        std::cout << "(9) EXIT\n\n";
-        std::cout << "Choose an option: ";
-        choice = tolower(_getch());
-
-        if (choice == '1') {
-            startGame();
-        }
-		else if (choice == '8') {
-			showInstructionsAndKeys();
-            openMenu();
-        }
-        else if (choice == '9') {
-            std::cout << "\nExiting game...\n";
-            Sleep(FRAME_RATE);
-            break;
-        }
-    }
+void GameManager::initializeGameObjects() {
+	std::cout << "Initializing game objects...\n";
+	//generateWalls();
+ //   generateTanks();
+	//generateMines();
 }
 
 void GameManager::startGame() {
-    isRunning = true;
-    isPaused = false;
-
-    std::cout << "Game started!" << std::endl;
-
-    while (isRunning) {
-        if (_kbhit()) {
-            char input = _getch();
-            switch (input) {
-            case ESCAPE:
-                pauseGame();
-                break;
-            }
-        }
-
-        if (!isPaused && isRunning) {
-            update();
-            render();
-        }
-
-        Sleep(FRAME_RATE);
-    }
+	initializeGameObjects();
+	isRunning = true;
+	gameLoop();
 }
 
 void GameManager::pauseGame() {
-    isPaused = true;
-    std::cout << "Game paused. Press 'ESC' to resume or 'x' to return to the main menu." << std::endl;
-
-    while (isPaused) {
-        if (_kbhit()) {
-            char input = tolower(_getch());
-            if (input == ESCAPE) {
-                resumeGame();
+	isPaused = true;
+	std::cout << "Game paused. Press ESC to resume or X to return to the main menu.\n";
+	while (isPaused) {
+		if (_kbhit()) {
+			char input = tolower(_getch());
+			if (input == ESCAPE) {
+				resumeGame();
+				break;
 			}
-            else if (input == 'x') {
-                isRunning = false;
-                std::cout << "Returning to main menu..." << std::endl;
-                Sleep(FRAME_RATE);
-                openMenu();
-            }
-        }
-        Sleep(100);
-    }
+			else if (input == 'x') {
+				gameOver();
+				break;
+			}
+		}
+		Sleep(FRAME_RATE / 10);
+	}
 }
 
 void GameManager::resumeGame() {
-    isPaused = false;
-    std::cout << "Game resumed!" << std::endl;
-}
-
-void GameManager::update() {
-    std::cout << "Updating game..." << std::endl;
-    // Add actual game logic here
-}
-
-void GameManager::render() {
-    std::cout << "Rendering frame..." << std::endl;
-    // Add rendering logic here
+	isPaused = false;
+	std::cout << "Game resumed.\n";
 }
 
 void GameManager::gameOver() {
-    isRunning = false;
-    std::cout << "Game Over!" << std::endl;
+	isRunning = false;
+	std::cout << "Game ended. Returning to main menu...\n";
 }
 
+void GameManager::updateGame() {
+	std::cout << "Updating game..." << std::endl;
+}
+
+void GameManager::gameLoop() {
+	while (isRunning) {
+		if (_kbhit()) {
+			char input = _getch();
+			if (input == ESCAPE) {
+				pauseGame();
+			}
+		}
+		if (!isRunning) {
+			break;
+		}
+		if (!isPaused) {
+			updateGame();
+		}
+		Sleep(FRAME_RATE);
+	}
+}

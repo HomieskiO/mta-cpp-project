@@ -5,12 +5,12 @@
 #include <time.h>
 
 #include "IOUtils.h"
-#include "GameManager.h"
+#include "MenuManager.h"
 
 int main()
 {
-	GameManager gameManager;
-	gameManager.openMenu();
+	MenuManager menuManager;
+	menuManager.openMenu();
 	//hideCursor();
  //   gotoxy(10, 5); // Move cursor to (10, 10)
  //   std::cout << "Hello World!";

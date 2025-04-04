@@ -1,23 +1,40 @@
 #pragma once
-#include <iostream>
+
 #define FRAME_RATE 1000 // milliseconds
 #define ESCAPE 27
+#include <vector>
+//#include "Tank.h"
+//#include "Mine.h"
+//#include "Wall.h"
+//#include "Shell.h"
 
 class GameManager {
-public:
-    GameManager();          
-
-    void openMenu();
-    void startGame();
-    void pauseGame();
-    void resumeGame();
-    void update();
-    void render();
-    void gameOver();
-
 private:
     bool isRunning;
     bool isPaused;
+    //Tank* player1;
+    //Tank* player2;
+    //std::vector<Mine> mines;
+    //std::vector<Wall> walls;
+    //std::vector<Shell> shells;
 
-    void showInstructionsAndKeys();
+public:
+    GameManager();
+	void initializeGameObjects();
+    void startGame();
+	void gameLoop();
+	void pauseGame();
+	void resumeGame();
+	void updateGame();
+	void gameOver();
+
+    //void handleInput();
+    //void update();
+    //void checkCollisions(Shell& shell);
+    //void checkGameOver();
+    //void render();
+    //void showGameOver();
+    //void generateMines();
+    //void generateWalls();
+
 };
