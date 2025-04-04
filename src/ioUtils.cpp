@@ -1,6 +1,18 @@
-#include "ioUtils.h"
+#include "IOUtils.h"
 
 using namespace std;
+
+enum class Direction {
+	UP,
+	UPRIGHT,
+	UPLEFT,
+	LEFT,
+	DOWN,
+	DOWNRIGHT,
+	DOWNLEFT,
+	RIGHT,
+	STAY
+};
 
 void gotoxy(int x, int y)
 {
@@ -22,7 +34,7 @@ void hideCursor()
 	SetConsoleCursorInfo(myconsole, &CURSOR);//second argument need pointer
 }
 
-void clear_screen()
+void clearScreen()
 {
 	system("cls");
 }
