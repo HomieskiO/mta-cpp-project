@@ -3,15 +3,20 @@
 
 #include <iostream>
 #include <time.h>
-#include "ioUtils.h"
+
+#include "IOUtils.h"
+#include "GameManager.h"
 
 int main()
 {
-    gotoxy(10, 5); // Move cursor to (10, 10)
-    std::cout << "Hello World!";
-	Sleep(1000); // Sleep for 1 second)
-    gotoxy(10, 10); // Move cursor to (10, 10)
-    std::cout << "Hello World!";
+	GameManager gameManager;
+	gameManager.openMenu();
+	//hideCursor();
+ //   gotoxy(10, 5); // Move cursor to (10, 10)
+ //   std::cout << "Hello World!";
+	//Sleep(1000); // Sleep for 1 second)
+ //   gotoxy(10, 10); // Move cursor to (10, 10)
+ //   std::cout << "Hello World!";
     return 0;
 }
 

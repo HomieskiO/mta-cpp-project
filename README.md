@@ -12,6 +12,8 @@ Handles main menu, game initialization, and pausing
 - `- isPaused`: bool  
 
 #### **Methods**:
+- `- showInstructionsAndKeys()`
+- `+ openMenu()`
 - `+ startGame()`
 - `+ pauseGame()`
 - `+ resumeGame()`
@@ -29,20 +31,17 @@ Describes all attributes and methods a game object should implement
 - `- isAlive`: bool  
 - `- xPos`: int  
 - `- yPos`: int  
-- `- xVel`: int  
-- `- yVel`: int  
+- `- direction`: Direction    
 
 #### **Methods**:
 - `+ getSymbol() : char`  
 - `+ setSymbol(symbol : char) : void`  
 - `+ getXPosition() : int`  
 - `+ setXPosition(x : int) : void`  
-- `+ getXVelocity() : int`  
-- `+ setXVelocity(x : int) : void`  
 - `+ getYPosition() : int`  
 - `+ setYPosition(y : int) : void`  
-- `+ getYVelocity() : int`  
-- `+ setYVelocity(y : int) : void`  
+- `+ getDirection() : Direction`  
+- `+ setDirection(direction : Direction) : void`  
 - `+ isAlive() : bool`  
 - `+ setState(state : bool) : void`  
 
@@ -56,7 +55,7 @@ Represents a tank in the game
 
 #### **Methods**:
 - `+ fire() : void`  
-- `+ move() : void` // Implementation from IMoveable  
+- `+ move(Direction direction) : void` // Implementation from IMoveable  
 - `+ takeDamage() : void` // Implementation from IDamageable  
 
 ---
@@ -77,8 +76,11 @@ Represents a cannon in the game
 ### **Shell** *(inherits GameObject, implements IMoveable)*  
 Represents a tank shell  
 
+#### **Attributes**:
+- `- direction`: Direction  
+
 #### **Methods**:
-- `+ move() : void` // Implementation from IMoveable  
+- `+ move(Direction direction) : void` // Implementation from IMoveable  
 
 ---
 
