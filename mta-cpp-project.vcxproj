@@ -30,10 +30,12 @@
     <ClCompile Include="src\GameManager.cpp" />
     <ClCompile Include="src\IOUtils.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\MenuManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GameManager.h" />
     <ClInclude Include="include\IOUtils.h" />
+    <ClInclude Include="include\MenuManager.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
