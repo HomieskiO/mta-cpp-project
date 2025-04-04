@@ -1,3 +1,9 @@
+.vs/
+ARM64/
+Debug/
+x64/
+*.vcxproj.user
+
 # Prerequisites
 *.d
 
