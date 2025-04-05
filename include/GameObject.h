@@ -8,8 +8,7 @@ enum class Direction {
     DOWN,
     DOWNRIGHT,
     DOWNLEFT,
-    RIGHT,
-    STAY
+    RIGHT
 };
 
 class GameObject {
