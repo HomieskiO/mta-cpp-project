@@ -1,10 +1,42 @@
 #include "MenuManager.h"
-#include <conio.h> 
+#include <conio.h>
 #include <windows.h>
 #include "IOUtils.h"
 
 MenuManager::MenuManager() {
-	gameManager = GameManager();
+    gameManager = nullptr;
+}
+
+void MenuManager::openMenu() {
+    char choice = 0;
+
+    while (choice != START_GAME && choice != INSTRUCTIONS && choice != EXIT) {
+        clearScreen();
+        std::cout << "=== Main Menu ===\n";
+        std::cout << "(1) Start a new Game\n";
+        std::cout << "(8) Present instructions and keys\n";
+        std::cout << "(9) EXIT\n\n";
+        std::cout << "Choose an option: ";
+        choice = tolower(_getch());
+
+        if (choice == START_GAME) {
+            clearScreen();
+			gameManager = new GameManager();
+            gameManager->startGame();
+			delete gameManager; // Clean up after the game ends
+            choice = 0; // Reset choice to show menu again
+        }
+        else if (choice == INSTRUCTIONS) {
+            clearScreen();
+            showInstructionsAndKeys();
+            choice = 0; // Reset choice to show menu again
+        }
+        else if (choice == EXIT) {
+            std::cout << "\nExiting game...\n";
+            Sleep(FRAME_RATE);
+            break;
+        }
+    }
 }
 
 void MenuManager::showInstructionsAndKeys() {
@@ -59,34 +91,4 @@ void MenuManager::showInstructionsAndKeys() {
     std::cout << "=========================================================================\n";
     std::cout << "Press any key to return to the menu...\n";
     _getch();
-}
-
-void MenuManager::openMenu() {
-    char choice = 0;
-
-    while (choice != START_GAME && choice != INSTRUCTIONS && choice != EXIT) {
-		clearScreen();
-        std::cout << "=== Main Menu ===\n";
-        std::cout << "(1) Start a new Game\n";
-        std::cout << "(8) Present instructions and keys\n";
-        std::cout << "(9) EXIT\n\n";
-        std::cout << "Choose an option: ";
-        choice = tolower(_getch());
-
-        if (choice == START_GAME) {
-            clearScreen();
-            gameManager.startGame();
-			choice = 0; // Reset choice to show menu again
-        }
-		else if (choice == INSTRUCTIONS) {
-            clearScreen();
-			showInstructionsAndKeys();
-			choice = 0; // Reset choice to show menu again
-        }
-        else if (choice == EXIT) {
-            std::cout << "\nExiting game...\n";
-            Sleep(FRAME_RATE);
-            break;
-        }
-    }
 }

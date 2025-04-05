@@ -57,6 +57,7 @@ Describes all attributes and methods a game object should implement
 - `+ setDirection(direction : Direction) : void`  
 - `+ isAlive() : bool`  
 - `+ setState(state : bool) : void`
+- `+ draw() : void`
 - `+ collidesWith(GameObject object) : bool`
 
 ---

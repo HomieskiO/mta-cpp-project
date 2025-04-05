@@ -1,6 +1,4 @@
 #pragma once
-#ifndef _IO_UTILS_H_
-#define _IO_UTILS_H_
 
 #include <iostream>
 //#include <stdio.h>
@@ -17,4 +15,3 @@ using namespace std;
 void gotoxy(int x, int y);
 void hideCursor();
 void clearScreen();
-#endif
