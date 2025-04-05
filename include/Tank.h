@@ -1,5 +1,7 @@
 #pragma once
 #include "GameObject.h"
+#include "MovingObject.h"
+#include "Cannon.h"
 #include <string>
 
 constexpr auto TANK_SYMBOL = 'O';
@@ -22,12 +24,15 @@ constexpr PlayerControls P2_CONTROLS = {
 };
 
 
-class Tank : public GameObject {
+class Tank : public MovingObject {
 private:
 	PlayerControls controls;
+    Cannon* cannon;
 public:
 	Tank(int x, int y, PlayerControls controls);
     PlayerControls getControls() const;
 	void setControls(PlayerControls controls);
     void rotateCannon(int angle);
+    void move() override;
+	void draw() const override;
 };

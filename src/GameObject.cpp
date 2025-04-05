@@ -1,11 +1,10 @@
 #include "GameObject.h"
 #include "IOUtils.h"
 
-GameObject::GameObject(char symbol, int x, int y, Direction direction) {
+GameObject::GameObject(char symbol, int x, int y) {
     this->symbol = symbol;
     this->x = x;
     this->y = y;
-    this->direction = direction;
     this->alive = true;
 }
 
@@ -31,14 +30,6 @@ int GameObject::getY() const {
 
 void GameObject::setY(int y) {
     this->y = y;
-}
-
-Direction GameObject::getDirection() const { 
-    return direction;
-}
-
-void GameObject::setDirection(Direction direction) {
-    this->direction = direction;
 }
 
 bool GameObject::isAlive() const { 
