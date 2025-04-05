@@ -5,6 +5,8 @@ constexpr auto ESCAPE = 27;
 #include <vector>
 #include "GameObject.h"
 #include "Tank.h"
+#include <Windows.h>
+
 //#include "Mine.h"
 //#include "Wall.h"
 //#include "Shell.h"
@@ -29,8 +31,10 @@ public:
 	void resumeGame();
 	void updateGame();
 	void gameOver();
+    void handlePlayerInput(Tank* player);
+    static bool isKeyPressed(int key);
 
-    //void handleInput();
+
     //void update();
     //void checkCollisions(Shell& shell);
     //void checkGameOver();

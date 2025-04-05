@@ -25,8 +25,8 @@ void GameManager::initializeGameObjects() {
 }
 
 void GameManager::generateTanks() {
-	player1 = new Tank(10, 4);
-	player2 = new Tank(10, 10);
+	player1 = new Tank(10, 4, P1_CONTROLS);
+	player2 = new Tank(10, 10, P2_CONTROLS);
 }
 
 void GameManager::gameLoop() {
@@ -41,26 +41,76 @@ void GameManager::gameLoop() {
 			break;
 		}
 		if (!isPaused) {
+			handlePlayerInput(player1);
+			handlePlayerInput(player2);
+
 			updateGame();
 		}
 		Sleep(FRAME_RATE);
 	}
 }
 
+bool GameManager::isKeyPressed(int keyCode) {
+	return GetAsyncKeyState(keyCode) & 0x8000;
+}
+
+void GameManager::handlePlayerInput(Tank* player) {
+	PlayerControls controls = player->getControls();
+	if (isKeyPressed(controls.shoot)) {
+		/*player->shoot();*/
+	}
+	if (isKeyPressed(controls.stay)) {
+		player->setMovementState(MovementState::STAY);
+		return;
+	}
+	if (isKeyPressed(controls.rightTrackForward) && isKeyPressed(controls.rightTrackBackward)) {
+		return;
+	}
+	if (isKeyPressed(controls.leftTrackForward) && isKeyPressed(controls.leftTrackBackward)) {
+		return;
+	}
+	if (isKeyPressed(controls.rightTrackForward) && isKeyPressed(controls.leftTrackForward)) {
+		player->setMovementState(MovementState::FORWARD);
+	}
+	if (isKeyPressed(controls.rightTrackBackward) && isKeyPressed(controls.leftTrackBackward)) {
+		player->setMovementState(MovementState::BACKWARD);
+	}
+	if (isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.leftTrackBackward)) {
+		player->rotateCannon(-45);
+	}
+	if (isKeyPressed(controls.rightTrackBackward) && !isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.leftTrackBackward)) {
+		player->rotateCannon(45);
+	}
+	if (isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.rightTrackBackward)) {
+		player->rotateCannon(45);
+	}
+	if (isKeyPressed(controls.leftTrackBackward) && !isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.rightTrackBackward)) {
+		player->rotateCannon(-45);
+	}
+	if (isKeyPressed(controls.leftTrackForward) && isKeyPressed(controls.rightTrackBackward)) {
+		player->rotateCannon(90);
+	}
+	if (isKeyPressed(controls.leftTrackBackward) && isKeyPressed(controls.rightTrackForward)) {
+		player->rotateCannon(-90);
+	}
+}
+
 void GameManager::updateGame() {
 	clearScreen();
 
-	if (player1->collidesWith(*player2)) {
+	/*if (player1->collidesWith(*player2)) {
 		std::cout << "Collision detected! Game Over.\n";
 		gameOver();
 		return;
-	}
+	}*/
 
 	player1->draw();
 	player2->draw();
 
-	player1->setY(player1->getY()+1);
-	player2->setY(player2->getY() - 1);
+	player1->move();
+
+	//player1->setY(player1->getY()+1);
+	//player2->setY(player2->getY() - 1);
 	//std::cout << "Updating game..." << std::endl;
 }
 
