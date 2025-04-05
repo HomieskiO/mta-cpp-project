@@ -2,18 +2,6 @@
 
 using namespace std;
 
-enum class Direction {
-	UP,
-	UPRIGHT,
-	UPLEFT,
-	LEFT,
-	DOWN,
-	DOWNRIGHT,
-	DOWNLEFT,
-	RIGHT,
-	STAY
-};
-
 void gotoxy(int x, int y)
 {
 	HANDLE hConsoleOutput;
