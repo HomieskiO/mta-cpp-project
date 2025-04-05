@@ -1,7 +1,10 @@
 #pragma once
 
-constexpr auto FRAME_RATE = 1000; // milliseconds;
+constexpr auto FRAME_RATE = 500; // milliseconds;
 constexpr auto ESCAPE = 27;
+constexpr auto BOARD_HEIGHT = 25;
+constexpr auto BOARD_WIDTH = 80;
+
 #include <vector>
 #include "GameObject.h"
 #include "Tank.h"

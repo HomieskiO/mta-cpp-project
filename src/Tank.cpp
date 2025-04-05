@@ -2,6 +2,7 @@
 #include "MovingObject.h"
 #include "Cannon.h"
 #include <iostream>
+#include "GameManager.h"
 
 Tank::Tank(int x, int y, PlayerControls controls) : MovingObject(TANK_SYMBOL, x, y, Direction::UP, MovementState::STAY) {
 	this->controls = controls;
@@ -33,15 +34,48 @@ void Tank::rotateCannon(int angle) {
 }
 
 void Tank::move() {
-    if (movementState == MovementState::FORWARD) {
-		std::cout << "Moving forward from (" << x << ", " << y << ") in direction " << static_cast<int>(direction) << std::endl;
-    }
-    else if (movementState == MovementState::BACKWARD) {
-		std::cout << "Moving backward from (" << x << ", " << y << ") in direction " << static_cast<int>(direction) << std::endl;
-    }
-    else if (movementState == MovementState::STAY) {
-		std::cout << "Staying at (" << x << ", " << y << ") in direction " << static_cast<int>(direction) << std::endl;
-    }
+	int velocity = 0;
+	if (movementState == MovementState::FORWARD) {
+		velocity = 1;
+	} else if (movementState == MovementState::BACKWARD) {
+		velocity = -1;
+	}
+
+	switch (direction) {
+	case Direction::UP:
+		x = x;
+		y = (BOARD_HEIGHT + y - velocity) % BOARD_HEIGHT;
+		break;
+	case Direction::UPRIGHT:
+		x = (BOARD_WIDTH + x + velocity) % BOARD_WIDTH;
+		y = (BOARD_HEIGHT + y - velocity) % BOARD_HEIGHT;
+		break;
+	case Direction::UPLEFT:
+		x = (BOARD_WIDTH + x - velocity) % BOARD_WIDTH;
+		y = (BOARD_HEIGHT + y - velocity) % BOARD_HEIGHT;
+		break;
+	case Direction::LEFT:
+		x = (BOARD_WIDTH + x - velocity) % BOARD_WIDTH;
+		y = y;
+		break;
+	case Direction::DOWN:
+		x = x;
+		y = (BOARD_HEIGHT + y + velocity) % BOARD_HEIGHT;
+		break;
+	case Direction::DOWNRIGHT:
+		x = (BOARD_WIDTH + x + velocity) % BOARD_WIDTH;
+		y = (BOARD_HEIGHT + y + velocity) % BOARD_HEIGHT;
+		break;
+	case Direction::DOWNLEFT:
+		x = (BOARD_WIDTH + x - velocity) % BOARD_WIDTH;
+		y = (BOARD_HEIGHT + y + velocity) % BOARD_HEIGHT;
+		break;
+	case Direction::RIGHT:
+		x = (BOARD_WIDTH + x + velocity) % BOARD_WIDTH;
+		y = y;
+		break;
+	}
+	cannon->alignWithTank(x, y);
 }
 
 void Tank::draw() const {

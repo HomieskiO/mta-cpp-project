@@ -105,13 +105,10 @@ void GameManager::updateGame() {
 	}*/
 
 	player1->draw();
-	player2->draw();
+	//player2->draw();
 
 	player1->move();
 
-	//player1->setY(player1->getY()+1);
-	//player2->setY(player2->getY() - 1);
-	//std::cout << "Updating game..." << std::endl;
 }
 
 void GameManager::pauseGame() {

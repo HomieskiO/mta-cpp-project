@@ -1,4 +1,5 @@
 #include "Cannon.h"
+#include "GameManager.h"
 
 Cannon::Cannon(int tankX, int tankY, Direction tankDirection) : GameObject('|', tankX, tankY - 1) {
 	this->tankX = tankX;
@@ -50,5 +51,17 @@ void Cannon::rotateCannon(Direction tankDirection) {
 		this->y = tankY;
 		this->symbol = '-';
 		break;
+	}
+}
+
+void Cannon::alignWithTank(int tankX, int tankY) {
+	this->tankX = tankX;
+	this->tankY = tankY;
+	rotateCannon(tankDirection);
+	if (x == -1) {
+		x = BOARD_WIDTH;
+	}
+	if (y == -1) {
+		y = BOARD_HEIGHT;
 	}
 }
