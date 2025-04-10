@@ -17,23 +17,18 @@ void Tank::setControls(PlayerControls controls) {
 	this->controls = controls;
 }
 
-void Tank::rotateCannon(int angle) {
-    
-    // Convert direction enum to index
+void Tank::rotateCannon(int angle) {   
     int dirIndex = static_cast<int>(direction);
-
-    // Convert angle to steps (1 step = 45°)
     int steps = angle / 45;
-
-    // Rotate and wrap around (mod 8)
     int newIndex = (dirIndex + steps + 8) % 8;
 
     direction = static_cast<Direction>(newIndex);
     cannon->rotateCannon(direction);
-
 }
 
 void Tank::move() {
+	// TODO prevent moving on a wall after adding walls
+
 	int velocity = 0;
 	if (movementState == MovementState::FORWARD) {
 		velocity = 1;
@@ -75,10 +70,14 @@ void Tank::move() {
 		y = y;
 		break;
 	}
-	cannon->alignWithTank(x, y);
+	if (cannon) {
+		cannon->alignWithTank(x, y);
+	}
 }
 
 void Tank::draw() const {
     GameObject::draw();
-    cannon->draw();
+	if (cannon) {
+		cannon->draw();
+	}
 }

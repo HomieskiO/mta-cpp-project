@@ -20,6 +20,7 @@ private:
     bool isPaused;
     Tank* player1;
     Tank* player2;
+
     //std::vector<Mine> mines;
     //std::vector<Wall> walls;
     //std::vector<Shell> shells;
