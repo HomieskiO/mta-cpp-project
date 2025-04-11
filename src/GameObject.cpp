@@ -54,4 +54,5 @@ bool GameObject::collidesWith(const GameObject* object) const {
 }
 
 GameObject::~GameObject() {
+    std::cout << "GameObject destroyed\n";
 }

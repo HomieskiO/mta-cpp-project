@@ -10,6 +10,8 @@ GameManager::GameManager() {
 	player1 = nullptr;
 	player2 = nullptr;
 	shells = {};
+
+	tankMovementCooldown = false;
 }
 
 void GameManager::startGame() {
@@ -108,8 +110,10 @@ void GameManager::shoot(Tank* player) {
 }
 
 void GameManager::updateGame() {
-	player1->move();
-	player2->move();
+	if (!tankMovementCooldown) {
+		player1->move();
+		player2->move();
+	}
 
 	for (auto it = shells.begin(); it != shells.end(); ) {
 		Shell* shell = *it;
@@ -140,11 +144,13 @@ void GameManager::checkCollisions() {
 			player2->setState(false);
 			collided = true;
 		}
-		else if (shell && shell->collidesWith(player1->getCannon())) {
+
+		// TODO fix shell colliding with cannon in a moving tank
+		else if (shell && player1->getCannon() && shell->collidesWith(player1->getCannon())) {
 			player1->removeCannon();
 			collided = true;
 		}
-		else if (shell && shell->collidesWith(player2->getCannon())) {
+		else if (shell && player2->getCannon() && shell->collidesWith(player2->getCannon())) {
 			player2->removeCannon();
 			collided = true;
 		}
@@ -169,6 +175,8 @@ void GameManager::updateCooldowns() {
 	if (player2->getCooldown() > 0) {
 		player2->setCooldown(player2->getCooldown() - 1);
 	}
+
+	tankMovementCooldown = !tankMovementCooldown;
 }
 
 bool GameManager::checkGameOver() {
