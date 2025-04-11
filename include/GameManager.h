@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr auto FRAME_RATE = 500; // ms;
+constexpr auto FRAME_RATE = 200; // ms;
 constexpr auto ESCAPE = 27;
 constexpr auto BOARD_HEIGHT = 25;
 constexpr auto BOARD_WIDTH = 80;
@@ -24,11 +24,12 @@ private:
     Tank* player1;
     Tank* player2;
 
-	Shell* shell;
+    std::vector<Shell*> shells;
 
     //std::vector<Mine> mines;
     //std::vector<Wall> walls;
-    //std::vector<Shell> shells;
+    
+    bool tankMovementCooldown;
 
 public:
     GameManager();

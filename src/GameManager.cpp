@@ -9,7 +9,9 @@ GameManager::GameManager() {
 	isPaused = false;
 	player1 = nullptr;
 	player2 = nullptr;
-	shell = nullptr;
+	shells = {};
+
+	tankMovementCooldown = false;
 }
 
 void GameManager::startGame() {
@@ -20,8 +22,8 @@ void GameManager::startGame() {
 }
 
 void GameManager::initializeGameObjects() {
-	//generateWalls();
 	generateTanks();
+	//generateWalls();
 	//generateMines();
 }
 
@@ -102,21 +104,26 @@ void GameManager::handlePlayerInput(Tank* player) {
 
 void GameManager::shoot(Tank* player) {
 	if (player->canShoot()) {
-		shell = new Shell(player->getCannonX(), player->getCannonY(), player->getDirection());
+		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection()));
 		player->setCooldown(SHOOT_COOLDOWN + 1);
 	}
 }
 
 void GameManager::updateGame() {
-	player1->move();
-	player2->move();
+	if (!tankMovementCooldown) {
+		player1->move();
+		player2->move();
+	}
 
-	// maybe move to updateShells
-	if (shell != nullptr) {
+	for (auto it = shells.begin(); it != shells.end(); ) {
+		Shell* shell = *it;
 		shell->move();
 		if (!isInBoard(shell)) {
 			delete shell;
-			shell = nullptr;
+			it = shells.erase(it);
+		}
+		else {
+			++it;
 		}
 	}
 
@@ -125,16 +132,40 @@ void GameManager::updateGame() {
 }
 
 void GameManager::checkCollisions() {
-	if (shell != nullptr && shell->collidesWith(player1)) {
-		player1->setState(false);
-		delete shell;
-		shell = nullptr;
+	for (auto it = shells.begin(); it != shells.end(); ) {
+		Shell* shell = *it;
+		bool collided = false;
+
+		if (shell && shell->collidesWith(player1)) {
+			player1->setState(false);
+			collided = true;
+		}
+		else if (shell && shell->collidesWith(player2)) {
+			player2->setState(false);
+			collided = true;
+		}
+
+		// TODO fix shell colliding with cannon in a moving tank
+		else if (shell && player1->getCannon() && shell->collidesWith(player1->getCannon())) {
+			player1->removeCannon();
+			collided = true;
+		}
+		else if (shell && player2->getCannon() && shell->collidesWith(player2->getCannon())) {
+			player2->removeCannon();
+			collided = true;
+		}
+
+		// TODO add walls collisions
+
+		if (collided) {
+			delete shell;
+			it = shells.erase(it);
+		}
+		else {
+			++it;
+		}
 	}
-	if (shell != nullptr && shell->collidesWith(player2)) {
-		player2->setState(false);
-		delete shell;
-		shell = nullptr;
-	}
+
 }
 
 void GameManager::updateCooldowns() {
@@ -144,6 +175,8 @@ void GameManager::updateCooldowns() {
 	if (player2->getCooldown() > 0) {
 		player2->setCooldown(player2->getCooldown() - 1);
 	}
+
+	tankMovementCooldown = !tankMovementCooldown;
 }
 
 bool GameManager::checkGameOver() {
@@ -156,8 +189,10 @@ void GameManager::drawGameObjects() {
 	player1->draw();
 	player2->draw();
 
-	if (shell != nullptr){
-		shell->draw();
+	for (auto shell : shells) {
+		if (shell != nullptr) {
+			shell->draw();
+		}
 	}
 }
 
@@ -181,7 +216,7 @@ void GameManager::pauseGame() {
 				break;
 			}
 		}
-		Sleep(FRAME_RATE / 10);
+		Sleep(FRAME_RATE / 2);
 	}
 }
 
@@ -194,6 +229,16 @@ void GameManager::resumeGame() {
 void GameManager::gameOver() {
 	isRunning = false;
 	clearScreen();
+
+	if (!player1->isAlive() && !player2->isAlive()) {
+		std::cout << "Game tied.\n";
+	}
+	else if (!player1->isAlive()) { 
+		std::cout << "Player 2 Wins!\n"; 
+	}
+	else if (!player2->isAlive()) { 
+		std::cout << "Player 1 Wins!\n"; 
+	}
 	std::cout << "Game ended. Returning to main menu...\n";
 	Sleep(2*FRAME_RATE);
 }
