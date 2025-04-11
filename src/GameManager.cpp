@@ -9,6 +9,7 @@ GameManager::GameManager() {
 	isPaused = false;
 	player1 = nullptr;
 	player2 = nullptr;
+	shell = nullptr;
 }
 
 void GameManager::startGame() {
@@ -25,8 +26,8 @@ void GameManager::initializeGameObjects() {
 }
 
 void GameManager::generateTanks() {
-	player1 = new Tank(10, 4, P1_CONTROLS);
-	player2 = new Tank(10, 10, P2_CONTROLS);
+	player1 = new Tank(10, 10, P1_CONTROLS);
+	player2 = new Tank(10, 5, P2_CONTROLS);
 }
 
 void GameManager::gameLoop() {
@@ -45,6 +46,10 @@ void GameManager::gameLoop() {
 			handlePlayerInput(player2);
 
 			updateGame();
+			drawGameObjects();
+			if (checkGameOver()) {
+				gameOver();
+			}
 		}
 		Sleep(FRAME_RATE);
 	}
@@ -57,7 +62,7 @@ bool GameManager::isKeyPressed(int keyCode) {
 void GameManager::handlePlayerInput(Tank* player) {
 	PlayerControls controls = player->getControls();
 	if (isKeyPressed(controls.shoot)) {
-		/*player->shoot();*/
+		this->shoot(player);
 	}
 	if (isKeyPressed(controls.stay)) {
 		player->setMovementState(MovementState::STAY);
@@ -95,20 +100,69 @@ void GameManager::handlePlayerInput(Tank* player) {
 	}
 }
 
+void GameManager::shoot(Tank* player) {
+	if (player->canShoot()) {
+		shell = new Shell(player->getCannonX(), player->getCannonY(), player->getDirection());
+		player->setCooldown(SHOOT_COOLDOWN + 1);
+	}
+}
+
 void GameManager::updateGame() {
+	player1->move();
+	player2->move();
+
+	// maybe move to updateShells
+	if (shell != nullptr) {
+		shell->move();
+		if (!isInBoard(shell)) {
+			delete shell;
+			shell = nullptr;
+		}
+	}
+
+	checkCollisions();
+	updateCooldowns();
+}
+
+void GameManager::checkCollisions() {
+	if (shell != nullptr && shell->collidesWith(player1)) {
+		player1->setState(false);
+		delete shell;
+		shell = nullptr;
+	}
+	if (shell != nullptr && shell->collidesWith(player2)) {
+		player2->setState(false);
+		delete shell;
+		shell = nullptr;
+	}
+}
+
+void GameManager::updateCooldowns() {
+	if (player1->getCooldown() > 0) {
+		player1->setCooldown(player1->getCooldown() - 1);
+	}
+	if (player2->getCooldown() > 0) {
+		player2->setCooldown(player2->getCooldown() - 1);
+	}
+}
+
+bool GameManager::checkGameOver() {
+	return !player1->isAlive() || !player2->isAlive();
+}
+
+void GameManager::drawGameObjects() {
 	clearScreen();
 
-	/*if (player1->collidesWith(*player2)) {
-		std::cout << "Collision detected! Game Over.\n";
-		gameOver();
-		return;
-	}*/
-
 	player1->draw();
-	//player2->draw();
+	player2->draw();
 
-	player1->move();
+	if (shell != nullptr){
+		shell->draw();
+	}
+}
 
+bool GameManager::isInBoard(GameObject* object) {
+	return object->getX() >= 0 && object->getX() < BOARD_WIDTH && object->getY() >= 0 && object->getY() < BOARD_HEIGHT;
 }
 
 void GameManager::pauseGame() {
@@ -139,6 +193,7 @@ void GameManager::resumeGame() {
 
 void GameManager::gameOver() {
 	isRunning = false;
+	clearScreen();
 	std::cout << "Game ended. Returning to main menu...\n";
-	Sleep(FRAME_RATE);
+	Sleep(2*FRAME_RATE);
 }

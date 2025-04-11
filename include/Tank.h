@@ -2,9 +2,11 @@
 #include "GameObject.h"
 #include "MovingObject.h"
 #include "Cannon.h"
+#include "Shell.h"
 #include <string>
 
 constexpr auto TANK_SYMBOL = 'O';
+constexpr auto SHOOT_COOLDOWN = 5;
 
 struct PlayerControls {
     int leftTrackForward;
@@ -28,11 +30,18 @@ class Tank : public MovingObject {
 private:
 	PlayerControls controls;
     Cannon* cannon;
+    Shell* shell;
+    int cooldown;
 public:
 	Tank(int x, int y, PlayerControls controls);
     PlayerControls getControls() const;
 	void setControls(PlayerControls controls);
     void rotateCannon(int angle);
     void move() override;
+    bool canShoot();
 	void draw() const override;
+	int getCannonX() const;
+	int getCannonY() const;
+    int getCooldown();
+    void setCooldown(int cooldown);
 };

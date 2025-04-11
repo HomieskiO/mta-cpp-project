@@ -11,12 +11,7 @@ int main()
 {
 	MenuManager menuManager;
 	menuManager.openMenu();
-	//hideCursor();
- //   gotoxy(10, 5); // Move cursor to (10, 10)
- //   std::cout << "Hello World!";
-	//Sleep(1000); // Sleep for 1 second)
- //   gotoxy(10, 10); // Move cursor to (10, 10)
- //   std::cout << "Hello World!";
+
     return 0;
 }
 

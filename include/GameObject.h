@@ -24,6 +24,7 @@ public:
 
     virtual void draw() const;
     bool collidesWith(const GameObject& object) const;
+    bool collidesWith(const GameObject* object) const;
 
     virtual ~GameObject();
 };
