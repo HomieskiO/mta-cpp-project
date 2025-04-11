@@ -1,12 +1,15 @@
 #include "Tank.h"
 #include "MovingObject.h"
 #include "Cannon.h"
+#include "Shell.h"
 #include <iostream>
 #include "GameManager.h"
 
 Tank::Tank(int x, int y, PlayerControls controls) : MovingObject(TANK_SYMBOL, x, y, Direction::UP, MovementState::STAY) {
 	this->controls = controls;
     this->cannon = new Cannon(x, y, direction);
+	this->shell = nullptr;
+	this->cooldown = 0;
 }
 
 PlayerControls Tank::getControls() const {
@@ -75,9 +78,29 @@ void Tank::move() {
 	}
 }
 
+bool Tank::canShoot() {
+	return cannon != nullptr && cooldown == 0;
+}
+
 void Tank::draw() const {
     GameObject::draw();
 	if (cannon) {
 		cannon->draw();
 	}
+}
+
+int Tank::getCannonX() const {
+	return cannon->getX();
+}
+
+int Tank::getCannonY() const {
+	return cannon->getY();
+}
+
+int Tank::getCooldown() {
+	return cooldown;
+}
+
+void Tank::setCooldown(int cooldown) {
+	this->cooldown = cooldown;
 }

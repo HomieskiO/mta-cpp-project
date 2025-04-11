@@ -49,6 +49,9 @@ bool GameObject::collidesWith(const GameObject& object) const {
     return this->x == object.getX() && this->y == object.getY();
 }
 
+bool GameObject::collidesWith(const GameObject* object) const {
+    return this->x == object->getX() && this->y == object->getY();
+}
+
 GameObject::~GameObject() {
-    std::cout << "GameObject destroyed\n";
 }

@@ -34,6 +34,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MenuManager.cpp" />
     <ClCompile Include="src\MovingObject.cpp" />
+    <ClCompile Include="src\Shell.cpp" />
     <ClCompile Include="src\Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -43,6 +44,7 @@
     <ClInclude Include="include\IOUtils.h" />
     <ClInclude Include="include\MenuManager.h" />
     <ClInclude Include="include\MovingObject.h" />
+    <ClInclude Include="include\Shell.h" />
     <ClInclude Include="include\Tank.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

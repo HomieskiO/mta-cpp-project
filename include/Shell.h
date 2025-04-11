@@ -7,11 +7,7 @@
 constexpr auto SHELL_SYMBOL = '*';
 
 class Shell : public MovingObject {
-private:
-    int cannonX;
-    int cannonY;
-
 public:
-    Shell(int x, int y, int cannonX, int cannonY, Direction cannonDirection);
+    Shell(int x, int y, Direction tankDirection);
     void move() override;
 };
