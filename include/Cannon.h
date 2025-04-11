@@ -11,6 +11,7 @@ private:
 
 public:
 	Cannon(int tankX, int tankY, Direction tankDirection);
+	Cannon(int tankX, int tankY, Direction tankDirection, int color);
 	void rotateCannon(Direction direction);
 	void alignWithTank(int tankX, int tankY);
 };

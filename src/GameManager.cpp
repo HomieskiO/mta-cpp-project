@@ -28,8 +28,8 @@ void GameManager::initializeGameObjects() {
 }
 
 void GameManager::generateTanks() {
-	player1 = new Tank(10, 10, P1_CONTROLS);
-	player2 = new Tank(10, 5, P2_CONTROLS);
+	player1 = new Tank(10, 10, P1_CONTROLS, PLAYER_1_COLOR);
+	player2 = new Tank(10, 5, P2_CONTROLS, PLAYER_2_COLOR);
 }
 
 void GameManager::gameLoop() {
@@ -104,7 +104,7 @@ void GameManager::handlePlayerInput(Tank* player) {
 
 void GameManager::shoot(Tank* player) {
 	if (player->canShoot()) {
-		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection()));
+		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection(), player->getColor()));
 		player->setCooldown(SHOOT_COOLDOWN + 1);
 	}
 }
@@ -145,7 +145,7 @@ void GameManager::checkCollisions() {
 			collided = true;
 		}
 
-		// TODO fix shell colliding with cannon in a moving tank
+		// TODO fix shell colliding with cannon in a diagonal(?) moving tank
 		else if (shell && player1->getCannon() && shell->collidesWith(player1->getCannon())) {
 			player1->removeCannon();
 			collided = true;

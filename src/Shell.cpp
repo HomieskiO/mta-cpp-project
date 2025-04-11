@@ -5,6 +5,9 @@
 Shell::Shell(int x, int y, Direction tankDirection) : MovingObject(SHELL_SYMBOL, x, y, tankDirection, MovementState::FORWARD) {
 }
 
+Shell::Shell(int x, int y, Direction tankDirection, int color) : MovingObject(SHELL_SYMBOL, x, y, tankDirection, MovementState::FORWARD, color) {
+}
+
 
 void Shell::move() {
 	int velocity = 0;

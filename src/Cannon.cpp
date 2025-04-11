@@ -7,6 +7,12 @@ Cannon::Cannon(int tankX, int tankY, Direction tankDirection) : GameObject('|', 
 	this->tankDirection = tankDirection;
 }
 
+Cannon::Cannon(int tankX, int tankY, Direction tankDirection, int color) : GameObject('|', tankX, tankY - 1, color) {
+	this->tankX = tankX;
+	this->tankY = tankY;
+	this->tankDirection = tankDirection;
+}
+
 void Cannon::rotateCannon(Direction tankDirection) {
 	this->tankDirection = tankDirection;
 

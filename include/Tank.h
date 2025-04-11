@@ -34,6 +34,7 @@ private:
     int cooldown;
 public:
 	Tank(int x, int y, PlayerControls controls);
+    Tank(int x, int y, PlayerControls controls, int color);
     PlayerControls getControls() const;
 	void setControls(PlayerControls controls);
     void rotateCannon(int angle);
@@ -46,4 +47,5 @@ public:
     void setCooldown(int cooldown);
     Cannon* getCannon();
     void removeCannon();
+    int getColor();
 };

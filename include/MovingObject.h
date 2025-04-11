@@ -24,6 +24,7 @@ protected:
 	Direction direction;
 public:
 	MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState);
+    MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState, int color);
 	MovementState getMovementState() const;	
 	void setMovementState(MovementState state);
     Direction getDirection() const;
