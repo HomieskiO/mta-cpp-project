@@ -5,6 +5,9 @@ constexpr auto ESCAPE = 27;
 constexpr auto BOARD_HEIGHT = 25;
 constexpr auto BOARD_WIDTH = 80;
 
+constexpr auto PLAYER_1_COLOR = 4;
+constexpr auto PLAYER_2_COLOR = 1;
+
 #include <vector>
 #include "GameObject.h"
 #include "MovingObject.h"

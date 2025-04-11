@@ -12,6 +12,13 @@ Tank::Tank(int x, int y, PlayerControls controls) : MovingObject(TANK_SYMBOL, x,
 	this->cooldown = 0;
 }
 
+Tank::Tank(int x, int y, PlayerControls controls, int color) : MovingObject(TANK_SYMBOL, x, y, Direction::UP, MovementState::STAY, color) {
+	this->controls = controls;
+	this->cannon = new Cannon(x, y, direction, color);
+	this->shell = nullptr;
+	this->cooldown = 0;
+}
+
 PlayerControls Tank::getControls() const {
 	return controls;
 }
@@ -112,4 +119,8 @@ Cannon* Tank::getCannon() {
 void Tank::removeCannon() {
 	delete cannon;
 	cannon = nullptr;
+}
+
+int Tank::getColor() {
+	return color;
 }

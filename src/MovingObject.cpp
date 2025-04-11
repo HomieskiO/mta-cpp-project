@@ -5,6 +5,13 @@ MovingObject::MovingObject(char symbol, int x, int y, Direction direction, Movem
 	this->direction = direction;
 	this->movementState = movementState;
 }
+
+MovingObject::MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState, int color)
+	: GameObject(symbol, x, y, color) {
+	this->direction = direction;
+	this->movementState = movementState;
+}
+
 MovementState MovingObject::getMovementState() const {
 	return movementState;
 }

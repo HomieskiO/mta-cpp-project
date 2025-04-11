@@ -9,5 +9,6 @@ constexpr auto SHELL_SYMBOL = '*';
 class Shell : public MovingObject {
 public:
     Shell(int x, int y, Direction tankDirection);
+    Shell(int x, int y, Direction tankDirection, int color);
     void move() override;
 };

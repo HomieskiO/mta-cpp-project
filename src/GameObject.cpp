@@ -6,6 +6,15 @@ GameObject::GameObject(char symbol, int x, int y) {
     this->x = x;
     this->y = y;
     this->alive = true;
+    this->color = WHITE_COLOR;
+}
+
+GameObject::GameObject(char symbol, int x, int y, int color) {
+    this->symbol = symbol;
+    this->x = x;
+    this->y = y;
+    this->alive = true;
+    this->color = color;
 }
 
 char GameObject::getSymbol() const {
@@ -41,8 +50,10 @@ void GameObject::setState(bool state) {
 }
 
 void GameObject::draw() const { 
-    gotoxy(x, y); 
+    gotoxy(x, y);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
     std::cout << symbol;
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE_COLOR);
 }
 
 bool GameObject::collidesWith(const GameObject& object) const { 
@@ -54,5 +65,4 @@ bool GameObject::collidesWith(const GameObject* object) const {
 }
 
 GameObject::~GameObject() {
-    std::cout << "GameObject destroyed\n";
 }
