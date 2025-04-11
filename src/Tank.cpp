@@ -104,3 +104,12 @@ int Tank::getCooldown() {
 void Tank::setCooldown(int cooldown) {
 	this->cooldown = cooldown;
 }
+
+Cannon* Tank::getCannon() {
+	return cannon;
+}
+
+void Tank::removeCannon() {
+	delete cannon;
+	cannon = nullptr;
+}

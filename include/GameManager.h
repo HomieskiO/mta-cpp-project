@@ -24,7 +24,7 @@ private:
     Tank* player1;
     Tank* player2;
 
-	Shell* shell;
+    std::vector<Shell*> shells;
 
     //std::vector<Mine> mines;
     //std::vector<Wall> walls;

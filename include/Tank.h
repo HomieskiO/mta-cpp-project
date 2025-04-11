@@ -44,4 +44,6 @@ public:
 	int getCannonY() const;
     int getCooldown();
     void setCooldown(int cooldown);
+    Cannon* getCannon();
+    void removeCannon();
 };
