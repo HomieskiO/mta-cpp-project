@@ -23,13 +23,25 @@ void GameManager::startGame() {
 
 void GameManager::initializeGameObjects() {
 	generateTanks();
-	//generateWalls();
-	//generateMines();
+	generateWalls();
+	generateMines();
 }
 
 void GameManager::generateTanks() {
 	player1 = new Tank(10, 10, P1_CONTROLS, PLAYER_1_COLOR);
 	player2 = new Tank(10, 5, P2_CONTROLS, PLAYER_2_COLOR);
+}
+
+void GameManager::generateWalls() {
+	walls.push_back(Wall(5, 3, WALL_COLOR));
+	walls.push_back(Wall(1, 2, WALL_COLOR));
+	walls.push_back(Wall(7, 10, WALL_COLOR));
+}
+
+void GameManager::generateMines() {
+	mines.push_back(Mine(3, 5, MINE_COLOR));
+	mines.push_back(Mine(2, 1, MINE_COLOR));
+	mines.push_back(Mine(10, 7, MINE_COLOR));
 }
 
 void GameManager::gameLoop() {
@@ -185,6 +197,13 @@ bool GameManager::checkGameOver() {
 
 void GameManager::drawGameObjects() {
 	clearScreen();
+
+	for (const Wall& wall : walls) {
+		wall.draw();
+	}
+	for (const Mine& mine : mines) {
+		mine.draw();
+	}
 
 	player1->draw();
 	player2->draw();
