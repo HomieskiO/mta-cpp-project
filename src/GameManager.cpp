@@ -124,7 +124,10 @@ void GameManager::shoot(Tank* player) {
 void GameManager::updateGame() {
 	if (!tankMovementCooldown) {
 		player1->move();
+		checkTankOnMine(player1);
+		
 		player2->move();
+		checkTankOnMine(player2);
 	}
 
 	for (auto it = shells.begin(); it != shells.end(); ) {
@@ -178,6 +181,14 @@ void GameManager::checkCollisions() {
 		}
 	}
 
+}
+
+void GameManager::checkTankOnMine(Tank* player) {
+	for (const Mine& mine : mines) {
+		if (player->getX() == mine.getX() && player->getY() == mine.getY()) {
+			player->setState(false);
+		}
+	}
 }
 
 void GameManager::updateCooldowns() {
