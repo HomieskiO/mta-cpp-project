@@ -42,13 +42,11 @@ void GameManager::generateTanks() {
 }
 
 void GameManager::generateWalls() {
-	int color;
+	int color = WALL_COLOR;
 	if (!coloredGame) {
 		color = WHITE_COLOR;
 	}
-	else {
-		color = WALL_COLOR;
-	}
+
 	// Central horizontal line
 	for (int x = 20; x < 60; ++x) {
 		walls.push_back(Wall(x, 12, color));
@@ -82,12 +80,9 @@ void GameManager::generateWalls() {
 }
 
 void GameManager::generateMines() {
-	int color;
+	int color = MINE_COLOR;
 	if (!coloredGame) {
 		color = WHITE_COLOR;
-	}
-	else {
-		color = MINE_COLOR;
 	}
 	// Mines scattered in open zones, away from spawn points
 	mines.push_back(Mine(22, 8, color));
