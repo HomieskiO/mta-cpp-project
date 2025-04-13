@@ -36,6 +36,8 @@
     <ClCompile Include="src\MovingObject.cpp" />
     <ClCompile Include="src\Shell.cpp" />
     <ClCompile Include="src\Tank.cpp" />
+	<ClCompile Include="src\Wall.cpp" />
+	<ClCompile Include="src\Mine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Cannon.h" />
@@ -46,6 +48,8 @@
     <ClInclude Include="include\MovingObject.h" />
     <ClInclude Include="include\Shell.h" />
     <ClInclude Include="include\Tank.h" />
+	<ClInclude Include="include\Wall.h" />
+	<ClInclude Include="include\Mine.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
