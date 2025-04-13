@@ -42,46 +42,60 @@ void GameManager::generateTanks() {
 }
 
 void GameManager::generateWalls() {
+	int color;
+	if (!coloredGame) {
+		color = WHITE_COLOR;
+	}
+	else {
+		color = WALL_COLOR;
+	}
 	// Central horizontal line
 	for (int x = 20; x < 60; ++x) {
-		walls.push_back(Wall(x, 12, WALL_COLOR));
+		walls.push_back(Wall(x, 12, color));
 	}
 
 	// Two vertical lanes near center
 	for (int y = 5; y < 20; ++y) {
-		walls.push_back(Wall(30, y, WALL_COLOR));
-		walls.push_back(Wall(50, y, WALL_COLOR));
+		walls.push_back(Wall(30, y, color));
+		walls.push_back(Wall(50, y, color));
 	}
 
 	// Maze arms top left
 	for (int x = 5; x < 20; ++x)
-		walls.push_back(Wall(x, 4, WALL_COLOR));
+		walls.push_back(Wall(x, 4, color));
 	for (int y = 4; y < 10; ++y)
-		walls.push_back(Wall(5, y, WALL_COLOR));
+		walls.push_back(Wall(5, y, color));
 
 	// Maze arms bottom right
 	for (int x = 60; x < 75; ++x)
-		walls.push_back(Wall(x, 19, WALL_COLOR));
+		walls.push_back(Wall(x, 19, color));
 	for (int y = 14; y < 20; ++y)
-		walls.push_back(Wall(74, y, WALL_COLOR));
+		walls.push_back(Wall(74, y, color));
 
 	// Narrow passage top center
 	for (int x = 35; x < 45; ++x)
-		walls.push_back(Wall(x, 2, WALL_COLOR));
+		walls.push_back(Wall(x, 2, color));
 
 	// Diagonal barrier (optional)
 	for (int i = 0; i < 10; ++i)
-		walls.push_back(Wall(10 + i, 14 + i, WALL_COLOR));
+		walls.push_back(Wall(10 + i, 14 + i, color));
 }
 
 void GameManager::generateMines() {
+	int color;
+	if (!coloredGame) {
+		color = WHITE_COLOR;
+	}
+	else {
+		color = MINE_COLOR;
+	}
 	// Mines scattered in open zones, away from spawn points
-	mines.push_back(Mine(22, 8, MINE_COLOR));
-	mines.push_back(Mine(18, 18, MINE_COLOR));
-	mines.push_back(Mine(45, 5, MINE_COLOR));
-	mines.push_back(Mine(55, 15, MINE_COLOR));
-	mines.push_back(Mine(68, 10, MINE_COLOR));
-	mines.push_back(Mine(6, 21, MINE_COLOR));
+	mines.push_back(Mine(22, 8, color));
+	mines.push_back(Mine(18, 18, color));
+	mines.push_back(Mine(45, 5, color));
+	mines.push_back(Mine(55, 15, color));
+	mines.push_back(Mine(68, 10, color));
+	mines.push_back(Mine(6, 21, color));
 }
 
 
