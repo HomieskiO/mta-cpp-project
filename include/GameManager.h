@@ -54,7 +54,7 @@ public:
     bool isInBoard(GameObject* object);
     void generateMines();
     void generateWalls();
-
+    void checkTankOnMine(Tank* player);
     //void update();
     //void checkCollisions(Shell& shell);
     //void checkGameOver();
