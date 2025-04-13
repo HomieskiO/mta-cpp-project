@@ -37,21 +37,54 @@ void GameManager::generateTanks() {
 		player2Color = WHITE_COLOR;
 	}
 
-	player1 = new Tank(10, 10, P1_CONTROLS, player1Color);
-	player2 = new Tank(10, 4, P2_CONTROLS, player2Color);
+	player1 = new Tank(6, 3, P1_CONTROLS, player1Color);
+	player2 = new Tank(72, 22, P2_CONTROLS, player2Color);
 }
 
 void GameManager::generateWalls() {
-	walls.push_back(Wall(5, 3, WALL_COLOR));
-	walls.push_back(Wall(1, 2, WALL_COLOR));
-	walls.push_back(Wall(7, 10, WALL_COLOR));
+	// Central horizontal line
+	for (int x = 20; x < 60; ++x) {
+		walls.push_back(Wall(x, 12, WALL_COLOR));
+	}
+
+	// Two vertical lanes near center
+	for (int y = 5; y < 20; ++y) {
+		walls.push_back(Wall(30, y, WALL_COLOR));
+		walls.push_back(Wall(50, y, WALL_COLOR));
+	}
+
+	// Maze arms top left
+	for (int x = 5; x < 20; ++x)
+		walls.push_back(Wall(x, 4, WALL_COLOR));
+	for (int y = 4; y < 10; ++y)
+		walls.push_back(Wall(5, y, WALL_COLOR));
+
+	// Maze arms bottom right
+	for (int x = 60; x < 75; ++x)
+		walls.push_back(Wall(x, 19, WALL_COLOR));
+	for (int y = 14; y < 20; ++y)
+		walls.push_back(Wall(74, y, WALL_COLOR));
+
+	// Narrow passage top center
+	for (int x = 35; x < 45; ++x)
+		walls.push_back(Wall(x, 2, WALL_COLOR));
+
+	// Diagonal barrier (optional)
+	for (int i = 0; i < 10; ++i)
+		walls.push_back(Wall(10 + i, 14 + i, WALL_COLOR));
 }
 
 void GameManager::generateMines() {
-	mines.push_back(Mine(3, 5, MINE_COLOR));
-	mines.push_back(Mine(2, 1, MINE_COLOR));
-	mines.push_back(Mine(10, 7, MINE_COLOR));
+	// Mines scattered in open zones, away from spawn points
+	mines.push_back(Mine(22, 8, MINE_COLOR));
+	mines.push_back(Mine(18, 18, MINE_COLOR));
+	mines.push_back(Mine(45, 5, MINE_COLOR));
+	mines.push_back(Mine(55, 15, MINE_COLOR));
+	mines.push_back(Mine(68, 10, MINE_COLOR));
+	mines.push_back(Mine(6, 21, MINE_COLOR));
 }
+
+
 
 void GameManager::gameLoop() {
 	while (isRunning) {
@@ -229,7 +262,6 @@ void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 			collided = true;
 
 			if (!wallIt->isAlive())
-				// if changing walls to pinter add delete
 				wallIt = walls.erase(wallIt);
 			else {
 				wallIt->setColor(WHITE_COLOR);

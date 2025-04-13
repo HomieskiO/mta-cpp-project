@@ -59,10 +59,6 @@ private:
     void checkShellShellsCollisions(Shell* shell, bool& collided);
     void checkShellWallsCollisions(Shell* shell, bool& collided);
     void checkTanksMinesCollisions();
-    //void update();
-    //void checkGameOver();
-    //void render();
-    //void showGameOver();
 
 public:
     GameManager(bool coloredGame);
