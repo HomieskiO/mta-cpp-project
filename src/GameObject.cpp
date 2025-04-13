@@ -25,6 +25,14 @@ void GameObject::setSymbol(char symbol) {
     this->symbol = symbol;
 }
 
+int GameObject::getColor() const {
+    return color;
+}
+
+void GameObject::setColor(int color) {
+    this->color = color;
+}
+
 int GameObject::getX() const {
     return x;
 }

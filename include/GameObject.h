@@ -24,6 +24,9 @@ public:
     int getY() const;
     void setY(int y);
 
+    int getColor() const;
+    void setColor(int color);
+
     bool isAlive() const;
     void setState(bool state);
 
