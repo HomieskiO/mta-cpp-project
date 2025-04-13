@@ -142,11 +142,11 @@ void GameManager::updateGame() {
 		}
 	}
 
-	checkCollisions();
+	checkShellCollisions();
 	updateCooldowns();
 }
 
-void GameManager::checkCollisions() {
+void GameManager::checkShellCollisions() {
 	for (auto it = shells.begin(); it != shells.end(); ) {
 		Shell* shell = *it;
 		bool collided = false;
@@ -187,7 +187,6 @@ void GameManager::checkCollisions() {
 				++wallIt;
 			}
 		}
-
 
 		if (collided) {
 			delete shell;

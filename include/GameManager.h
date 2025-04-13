@@ -44,7 +44,7 @@ public:
 	void resumeGame();
 	void updateGame();
     void drawGameObjects();
-    void checkCollisions();
+    void checkShellCollisions();
     void updateCooldowns();
     bool checkGameOver();
 	void gameOver();
@@ -56,7 +56,6 @@ public:
     void generateWalls();
     void checkTankOnMine(Tank* player);
     //void update();
-    //void checkCollisions(Shell& shell);
     //void checkGameOver();
     //void render();
     //void showGameOver();
