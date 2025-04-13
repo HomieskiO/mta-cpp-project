@@ -5,6 +5,7 @@
 
 MenuManager::MenuManager() {
     gameManager = nullptr;
+    coloredGame = true;
 }
 
 void MenuManager::openMenu() {
@@ -14,6 +15,12 @@ void MenuManager::openMenu() {
         clearScreen();
         std::cout << "=== Main Menu ===\n";
         std::cout << "(1) Start a new Game\n";
+        if (coloredGame) {
+            std::cout << "(7) Switch to black and white game\n";
+        }
+        else {
+            std::cout << "(7) Switch to colored game\n";
+        }
         std::cout << "(8) Present instructions and keys\n";
         std::cout << "(9) EXIT\n\n";
         std::cout << "Choose an option: ";
@@ -21,10 +28,13 @@ void MenuManager::openMenu() {
 
         if (choice == START_GAME) {
             clearScreen();
-			gameManager = new GameManager();
+			gameManager = new GameManager(coloredGame);
             gameManager->startGame();
-			delete gameManager; // Clean up after the game ends
+			delete gameManager;
             choice = 0; // Reset choice to show menu again
+        }
+        else if (choice == CHANGE_GAME_COLOR) {
+            coloredGame = !coloredGame;
         }
         else if (choice == INSTRUCTIONS) {
             clearScreen();
@@ -33,7 +43,7 @@ void MenuManager::openMenu() {
         }
         else if (choice == EXIT) {
             std::cout << "\nExiting game...\n";
-            Sleep(FRAME_RATE);
+            Sleep(FRAME_RATE_MS);
             break;
         }
     }

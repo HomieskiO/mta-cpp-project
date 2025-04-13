@@ -3,6 +3,7 @@
 #include "GameManager.h"
 
 constexpr auto START_GAME = '1';
+constexpr auto CHANGE_GAME_COLOR = '7';
 constexpr auto INSTRUCTIONS = '8';
 constexpr auto EXIT = '9';
 
@@ -13,6 +14,7 @@ public:
 
 private:
     GameManager* gameManager;
+    bool coloredGame;
 
     void showInstructionsAndKeys();
 };

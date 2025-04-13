@@ -29,6 +29,5 @@ public:
 	void setMovementState(MovementState state);
     Direction getDirection() const;
     void setDirection(Direction direction);
-	virtual void move() = 0;
+	void move();
 };
-

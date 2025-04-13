@@ -38,7 +38,7 @@ public:
     PlayerControls getControls() const;
 	void setControls(PlayerControls controls);
     void rotateCannon(int angle);
-    void move() override;
+    void move();
     bool canShoot();
 	void draw() const override;
 	int getCannonX() const;
