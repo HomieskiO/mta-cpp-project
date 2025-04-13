@@ -133,10 +133,7 @@ void GameManager::shoot(Tank* player) {
 void GameManager::updateGame() {
 	if (!tankMovementCooldown) {
 		player1->move();
-		checkTankOnMine(player1);
-		
 		player2->move();
-		checkTankOnMine(player2);
 	}
 
 	for (auto it = shells.begin(); it != shells.end(); ) {
@@ -151,11 +148,53 @@ void GameManager::updateGame() {
 		}
 	}
 
-	checkShellCollisions();
+	checkCollisions();
 	updateCooldowns();
 }
 
-void GameManager::checkShellCollisions() {
+void GameManager::checkShellsCollisions() {
+	for (auto it = shells.begin(); it != shells.end(); ) {
+		Shell* shell = *it;
+		bool collided = false;
+
+		checkShellTanksCollisions(shell, collided);
+		checkShellCannonsCollisions(shell, collided);
+		checkShellShellsCollisions(shell, collided);
+		checkShellWallsCollisions(shell, collided);
+
+		if (collided) {
+			delete shell;
+			it = shells.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+}
+
+void GameManager::checkShellTanksCollisions(Shell* shell, bool& collided) {
+	if (shell && shell->collidesWith(player1)) {
+		player1->setState(false);
+		collided = true;
+	}
+	else if (shell && shell->collidesWith(player2)) {
+		player2->setState(false);
+		collided = true;
+	}
+}
+
+void GameManager::checkShellCannonsCollisions(Shell* shell, bool& collided) {
+	if (shell && player1->getCannon() && shell->collidesWith(player1->getCannon())) {
+		player1->removeCannon();
+		collided = true;
+	}
+	else if (shell && player2->getCannon() && shell->collidesWith(player2->getCannon())) {
+		player2->removeCannon();
+		collided = true;
+	}
+}
+
+void GameManager::checkShellShellsCollisions(Shell* shell, bool& collided) {
 	for (auto it = shells.begin(); it != shells.end(); ) {
 		Shell* otherShell = *it;
 
@@ -178,41 +217,35 @@ void GameManager::checkShellCollisions() {
 
 }
 
-void GameManager::checkCollisions() {
-	for (auto it = shells.begin(); it != shells.end(); ) {
-		Shell* shell = *it;
-		bool collided = false;
+void GameManager::checkTanksMinesCollisions() {
+	checkTankOnMine(player1);
+	checkTankOnMine(player2);
+}
 
-		checkShellTanksCollisions(shell, collided);
-		checkShellCannonsCollisions(shell, collided);
-		checkShellShellsCollisions(shell, collided);
+void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
+	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
+		if (shell->collidesWith(*wallIt)) {
+			wallIt->hit();
+			collided = true;
 
-		for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
-			if (shell->collidesWith(*wallIt)) {
-				wallIt->hit();
-				collided = true;
-
-				if (!wallIt->isAlive())
-					wallIt = walls.erase(wallIt);
-				else {
-					wallIt->setColor(WHITE_COLOR);
-					++wallIt;
-				}
-				break;
-			}
+			if (!wallIt->isAlive())
+				// if changing walls to pinter add delete
+				wallIt = walls.erase(wallIt);
 			else {
+				wallIt->setColor(WHITE_COLOR);
 				++wallIt;
 			}
-		}
-
-		if (collided) {
-			delete shell;
-			it = shells.erase(it);
+			break;
 		}
 		else {
-			++it;
+			++wallIt;
 		}
 	}
+}
+
+void GameManager::checkCollisions() {
+	checkShellsCollisions();
+	checkTanksMinesCollisions();
 
 }
 
