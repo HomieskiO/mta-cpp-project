@@ -142,11 +142,11 @@ void GameManager::updateGame() {
 		}
 	}
 
-	checkCollisions();
+	checkShellCollisions();
 	updateCooldowns();
 }
 
-void GameManager::checkCollisions() {
+void GameManager::checkShellCollisions() {
 	for (auto it = shells.begin(); it != shells.end(); ) {
 		Shell* shell = *it;
 		bool collided = false;
@@ -170,7 +170,23 @@ void GameManager::checkCollisions() {
 			collided = true;
 		}
 
-		// TODO add walls collisions
+		for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
+			if (shell->collidesWith(*wallIt)) {
+				wallIt->hit();
+				collided = true;
+
+				if (!wallIt->isAlive())
+					wallIt = walls.erase(wallIt);
+				else {
+					wallIt->setColor(WHITE_COLOR);
+					++wallIt;
+				}
+				break;
+			}
+			else {
+				++wallIt;
+			}
+		}
 
 		if (collided) {
 			delete shell;
@@ -185,7 +201,7 @@ void GameManager::checkCollisions() {
 
 void GameManager::checkTankOnMine(Tank* player) {
 	for (const Mine& mine : mines) {
-		if (player->getX() == mine.getX() && player->getY() == mine.getY()) {
+		if (player->collidesWith(mine)) {
 			player->setState(false);
 		}
 	}
