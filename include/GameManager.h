@@ -42,7 +42,6 @@ private:
     void resumeGame();
     void updateGame();
     void drawGameObjects();
-    void checkShellCollisions();
     void updateCooldowns();
     bool checkGameOver();
     void gameOver();
@@ -53,6 +52,13 @@ private:
     void generateMines();
     void generateWalls();
     void checkTankOnMine(Tank* player);
+    void checkCollisions();
+    void checkShellsCollisions();
+    void checkShellTanksCollisions(Shell* shell, bool& collided);
+    void checkShellCannonsCollisions(Shell* shell, bool& collided);
+    void checkShellShellsCollisions(Shell* shell, bool& collided);
+    void checkShellWallsCollisions(Shell* shell, bool& collided);
+    void checkTanksMinesCollisions();
     //void update();
     //void checkGameOver();
     //void render();
