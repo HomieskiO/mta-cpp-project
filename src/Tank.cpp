@@ -27,59 +27,21 @@ void Tank::setControls(PlayerControls controls) {
 	this->controls = controls;
 }
 
-void Tank::rotateCannon(int angle) {   
+void Tank::rotateCannon(int angle) { 
     int dirIndex = static_cast<int>(direction);
     int steps = angle / 45;
     int newIndex = (dirIndex + steps + 8) % 8;
 
     direction = static_cast<Direction>(newIndex);
-    cannon->rotateCannon(direction);
+	if (cannon) {
+		cannon->rotateCannon(direction);
+	}
 }
 
 void Tank::move() {
 	// TODO prevent moving on a wall after adding walls
+	MovingObject::move();
 
-	int velocity = 0;
-	if (movementState == MovementState::FORWARD) {
-		velocity = 1;
-	} else if (movementState == MovementState::BACKWARD) {
-		velocity = -1;
-	}
-
-	switch (direction) {
-	case Direction::UP:
-		x = x;
-		y = (BOARD_HEIGHT + y - velocity) % BOARD_HEIGHT;
-		break;
-	case Direction::UPRIGHT:
-		x = (BOARD_WIDTH + x + velocity) % BOARD_WIDTH;
-		y = (BOARD_HEIGHT + y - velocity) % BOARD_HEIGHT;
-		break;
-	case Direction::UPLEFT:
-		x = (BOARD_WIDTH + x - velocity) % BOARD_WIDTH;
-		y = (BOARD_HEIGHT + y - velocity) % BOARD_HEIGHT;
-		break;
-	case Direction::LEFT:
-		x = (BOARD_WIDTH + x - velocity) % BOARD_WIDTH;
-		y = y;
-		break;
-	case Direction::DOWN:
-		x = x;
-		y = (BOARD_HEIGHT + y + velocity) % BOARD_HEIGHT;
-		break;
-	case Direction::DOWNRIGHT:
-		x = (BOARD_WIDTH + x + velocity) % BOARD_WIDTH;
-		y = (BOARD_HEIGHT + y + velocity) % BOARD_HEIGHT;
-		break;
-	case Direction::DOWNLEFT:
-		x = (BOARD_WIDTH + x - velocity) % BOARD_WIDTH;
-		y = (BOARD_HEIGHT + y + velocity) % BOARD_HEIGHT;
-		break;
-	case Direction::RIGHT:
-		x = (BOARD_WIDTH + x + velocity) % BOARD_WIDTH;
-		y = y;
-		break;
-	}
 	if (cannon) {
 		cannon->alignWithTank(x, y);
 	}
