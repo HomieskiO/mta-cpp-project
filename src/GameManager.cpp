@@ -388,9 +388,9 @@ void GameManager::gameOver() {
 }
 
 bool GameManager::isWallAtPos(int x, int y) {
-	//for (const Wall& wall : walls) {
-	//	if (wall.isAlive() && wall.getX() == x && wall.getY() == y)
-	//		return true;
-	//}
-	return true;
+	for (const Wall& wall : walls) {
+		if (wall.isAlive() && wall.getX() == x && wall.getY() == y)
+			return true;
+	}
+	return false;
 }
