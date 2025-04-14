@@ -1,16 +1,22 @@
 #include "MovingObject.h"
 #include "GameManager.h"
+#include "IOUtils.h"
+#include <iostream>
 
 MovingObject::MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState)
 	: GameObject(symbol, x, y) {
 	this->direction = direction;
 	this->movementState = movementState;
+	this->prevX = x;
+	this->prevY = y;
 }
 
 MovingObject::MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState, int color)
 	: GameObject(symbol, x, y, color) {
 	this->direction = direction;
 	this->movementState = movementState;
+	this->prevX = x;
+	this->prevY = y;
 }
 
 MovementState MovingObject::getMovementState() const {
@@ -29,7 +35,17 @@ void MovingObject::setDirection(Direction direction) {
 	this->direction = direction;
 }
 
+void MovingObject::draw() const {
+	gotoxy(x, y);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+	std::cout << symbol;
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), WHITE_COLOR);
+}
+
 void MovingObject::move() {
+	prevX = x;
+	prevY = y;
+
 	int velocity = 0;
 	if (movementState == MovementState::FORWARD) {
 		velocity = 1;
@@ -71,5 +87,10 @@ void MovingObject::move() {
 		x = (BOARD_WIDTH + x + velocity) % BOARD_WIDTH;
 		y = y;
 		break;
+	}
+
+	if (prevX != x || prevY != y) {
+		gotoxy(prevX, prevY);
+		std::cout << " ";
 	}
 }

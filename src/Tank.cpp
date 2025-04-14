@@ -3,6 +3,7 @@
 #include "Cannon.h"
 #include "Shell.h"
 #include <iostream>
+#include "IOUtils.h"
 #include "GameManager.h"
 
 Tank::Tank(int x, int y, PlayerControls controls) : MovingObject(TANK_SYMBOL, x, y, Direction::UP, MovementState::STAY) {
@@ -52,7 +53,7 @@ bool Tank::canShoot() {
 }
 
 void Tank::draw() const {
-    GameObject::draw();
+    MovingObject::draw();
 	if (cannon) {
 		cannon->draw();
 	}

@@ -23,11 +23,15 @@ protected:
 	MovementState movementState;
 	Direction direction;
 public:
+    int prevX;
+    int prevY;
+
 	MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState);
     MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState, int color);
 	MovementState getMovementState() const;	
 	void setMovementState(MovementState state);
     Direction getDirection() const;
     void setDirection(Direction direction);
+    void draw() const override;
 	void move();
 };

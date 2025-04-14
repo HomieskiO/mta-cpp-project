@@ -264,11 +264,6 @@ void GameManager::checkShellShellsCollisions(Shell* shell, bool& collided) {
 
 }
 
-void GameManager::checkTanksMinesCollisions() {
-	checkTankOnMine(player1);
-	checkTankOnMine(player2);
-}
-
 void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
 		if (shell->collidesWith(*wallIt)) {
@@ -289,9 +284,29 @@ void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 	}
 }
 
+void GameManager::checkTanksMinesCollisions() {
+	checkTankOnMine(player1);
+	checkTankOnMine(player2);
+}
+
+//void GameManager::checkTanksWallsCollisions(Tank* player) {
+//	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
+//		if (player->collidesWith(*wallIt)) {
+//			player->setX(player->prevX);
+//			player->setY(player->prevY);
+//
+//			// change also the cannon x y
+//		}
+//		++wallIt;
+//	}
+//}
+
 void GameManager::checkCollisions() {
 	checkShellsCollisions();
 	checkTanksMinesCollisions();
+	//checkTanksWallsCollisions(player1);
+	//checkTanksWallsCollisions(player2);
+
 
 }
 
@@ -319,7 +334,7 @@ bool GameManager::checkGameOver() {
 }
 
 void GameManager::drawGameObjects() {
-	clearScreen();
+	//clearScreen();
 
 	for (const Wall& wall : walls) {
 		wall.draw();
