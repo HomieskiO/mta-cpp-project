@@ -39,8 +39,15 @@ void Tank::rotateCannon(int angle) {
 }
 
 void Tank::move() {
-	// TODO prevent moving on a wall after adding walls
 	MovingObject::move();
+
+	if (cannon) {
+		cannon->alignWithTank(x, y);
+	}
+}
+
+void Tank::moveToPoint(int nextX, int nextY) {
+	MovingObject::moveToPoint(nextX, nextY);
 
 	if (cannon) {
 		cannon->alignWithTank(x, y);

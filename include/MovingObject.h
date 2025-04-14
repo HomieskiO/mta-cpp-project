@@ -29,5 +29,7 @@ public:
 	void setMovementState(MovementState state);
     Direction getDirection() const;
     void setDirection(Direction direction);
-	void move();
+    void getNextPosition(int& nextX, int& nextY) const;
+    void move();
+    void moveToPoint(int nextX, int nextY);
 };
