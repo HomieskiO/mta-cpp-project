@@ -54,6 +54,7 @@ private:
     void checkTankOnMine(Tank* player);
     void checkCollisions();
     void checkShellsCollisions();
+    void checkTanksCollisions();
     void checkShellTanksCollisions(Shell* shell, bool& collided);
     void checkShellCannonsCollisions(Shell* shell, bool& collided);
     void checkShellShellsCollisions(Shell* shell, bool& collided);

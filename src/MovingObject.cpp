@@ -19,6 +19,14 @@ MovingObject::MovingObject(char symbol, int x, int y, Direction direction, Movem
 	this->prevY = y;
 }
 
+int MovingObject::getPrevX() const {
+	return prevX;
+}
+
+int MovingObject::getPrevY() const {
+	return prevY;
+}
+
 MovementState MovingObject::getMovementState() const {
 	return movementState;
 }

@@ -20,14 +20,15 @@ enum class Direction {
 
 class MovingObject : public GameObject {
 protected: 
+    int prevX;
+    int prevY;
 	MovementState movementState;
 	Direction direction;
 public:
-    int prevX;
-    int prevY;
-
 	MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState);
     MovingObject(char symbol, int x, int y, Direction direction, MovementState movementState, int color);
+    int getPrevX() const;
+    int getPrevY() const;
 	MovementState getMovementState() const;	
 	void setMovementState(MovementState state);
     Direction getDirection() const;

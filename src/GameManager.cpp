@@ -289,25 +289,32 @@ void GameManager::checkTanksMinesCollisions() {
 	checkTankOnMine(player2);
 }
 
-//void GameManager::checkTanksWallsCollisions(Tank* player) {
-//	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
-//		if (player->collidesWith(*wallIt)) {
-//			player->setX(player->prevX);
-//			player->setY(player->prevY);
-//
-//			// change also the cannon x y
-//		}
-//		++wallIt;
-//	}
-//}
+void GameManager::checkTanksWallsCollisions(Tank* player) {
+	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
+		// hitting a wall while moving
+		if (player->getMovementState() != MovementState::STAY && (player->collidesWith(*wallIt) || player->getCannon()->collidesWith(*wallIt))) {
+			player->setX(player->getPrevX());
+			player->setY(player->getPrevY());
+			player->alignCannon();
+			player->setMovementState(MovementState::STAY);
+		}
+		// hitting a wall rotating in place
+		else if (player->getMovementState() == MovementState::STAY && player->getCannon()->collidesWith(*wallIt)) {
+			player->rotateCannon(-player->getLastRotation());
+		}
+		++wallIt;
+	}
+}
+
+void GameManager::checkTanksCollisions() {
+	checkTanksMinesCollisions();
+	checkTanksWallsCollisions(player1);
+	checkTanksWallsCollisions(player2);
+}
 
 void GameManager::checkCollisions() {
 	checkShellsCollisions();
-	checkTanksMinesCollisions();
-	//checkTanksWallsCollisions(player1);
-	//checkTanksWallsCollisions(player2);
-
-
+	checkTanksCollisions();
 }
 
 void GameManager::checkTankOnMine(Tank* player) {
