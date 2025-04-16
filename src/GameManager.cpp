@@ -291,15 +291,18 @@ void GameManager::checkTanksMinesCollisions() {
 
 void GameManager::checkTanksWallsCollisions(Tank* player) {
 	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
+		bool isTankHittingWall = player->collidesWith(*wallIt);
+		bool isCannonHittingWall = player->getCannon() && player->getCannon()->collidesWith(*wallIt);
+		
 		// hitting a wall while moving
-		if (player->getMovementState() != MovementState::STAY && (player->collidesWith(*wallIt) || player->getCannon()->collidesWith(*wallIt))) {
+		if (player->getMovementState() != MovementState::STAY && (isTankHittingWall || isCannonHittingWall)) {
 			player->setX(player->getPrevX());
 			player->setY(player->getPrevY());
 			player->alignCannon();
 			player->setMovementState(MovementState::STAY);
 		}
 		// hitting a wall rotating in place
-		else if (player->getMovementState() == MovementState::STAY && player->getCannon()->collidesWith(*wallIt)) {
+		else if (player->getMovementState() == MovementState::STAY && isCannonHittingWall) {
 			player->rotateCannon(-player->getLastRotation());
 		}
 		++wallIt;
