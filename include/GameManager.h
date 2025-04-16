@@ -61,6 +61,7 @@ private:
     void checkShellWallsCollisions(Shell* shell, bool& collided);
     void checkTanksMinesCollisions();
     void checkTanksWallsCollisions(Tank* player);
+    void drawGameInfo();
 
 public:
     GameManager(bool coloredGame);

@@ -117,6 +117,7 @@ void GameManager::gameLoop() {
 
 			updateGame();
 			drawGameObjects();
+			drawGameInfo();
 			if (checkGameOver()) {
 				gameOver();
 			}
@@ -348,8 +349,6 @@ bool GameManager::checkGameOver() {
 }
 
 void GameManager::drawGameObjects() {
-	//clearScreen();
-
 	for (const Wall& wall : walls) {
 		wall.draw();
 	}
@@ -369,6 +368,13 @@ void GameManager::drawGameObjects() {
 
 bool GameManager::isInBoard(GameObject* object) {
 	return object->getX() >= 0 && object->getX() < BOARD_WIDTH && object->getY() >= 0 && object->getY() < BOARD_HEIGHT;
+}
+
+void GameManager::drawGameInfo() {
+	gotoxy(BOARD_WIDTH / 3, BOARD_HEIGHT);
+	if (player1->isAlive() && player2->isAlive()) {
+		std::cout << "Player 1 Lives: 1\tPlayer 2 Lives: 1";
+	}
 }
 
 void GameManager::pauseGame() {
