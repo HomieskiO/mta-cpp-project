@@ -59,6 +59,14 @@ void Tank::alignCannon() {
 	}
 }
 
+void Tank::moveToPoint(int nextX, int nextY) {
+	MovingObject::moveToPoint(nextX, nextY);
+
+	if (cannon) {
+		cannon->alignWithTank(x, y);
+	}
+}
+
 bool Tank::canShoot() {
 	return cannon != nullptr && cooldown == 0;
 }

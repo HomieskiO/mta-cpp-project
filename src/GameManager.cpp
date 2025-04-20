@@ -42,13 +42,11 @@ void GameManager::generateTanks() {
 }
 
 void GameManager::generateWalls() {
-	int color;
+	int color = WALL_COLOR;
 	if (!coloredGame) {
 		color = WHITE_COLOR;
 	}
-	else {
-		color = WALL_COLOR;
-	}
+
 	// Central horizontal line
 	for (int x = 20; x < 60; ++x) {
 		walls.push_back(Wall(x, 12, color));
@@ -82,12 +80,9 @@ void GameManager::generateWalls() {
 }
 
 void GameManager::generateMines() {
-	int color;
+	int color = MINE_COLOR;
 	if (!coloredGame) {
 		color = WHITE_COLOR;
-	}
-	else {
-		color = MINE_COLOR;
 	}
 	// Mines scattered in open zones, away from spawn points
 	mines.push_back(Mine(22, 8, color));
@@ -184,8 +179,15 @@ void GameManager::shoot(Tank* player) {
 
 void GameManager::updateGame() {
 	if (!tankMovementCooldown) {
-		player1->move();
-		player2->move();
+		int nextX1, nextY1, nextX2, nextY2;
+		player1->getNextPosition(nextX1, nextY1);
+		if (!isWallAtPos(nextX1, nextY1)) {
+			player1->moveToPoint(nextX1, nextY1);
+		}
+		player2->getNextPosition(nextX2, nextY2);
+		if (!isWallAtPos(nextX2, nextY2)) {
+			player2->moveToPoint(nextX2, nextY2);
+		}
 	}
 
 	for (auto it = shells.begin(); it != shells.end(); ) {
@@ -418,4 +420,12 @@ void GameManager::gameOver() {
 	}
 	std::cout << "Game ended. Press any key to return to the main menu...\n";
 	_getch();
+}
+
+bool GameManager::isWallAtPos(int x, int y) {
+	for (const Wall& wall : walls) {
+		if (wall.isAlive() && wall.getX() == x && wall.getY() == y)
+			return true;
+	}
+	return false;
 }
