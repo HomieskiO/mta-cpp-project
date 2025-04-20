@@ -1,8 +1,8 @@
 ﻿# MTA C++ Project 2025B 
 
 ### Students
-- Omer Chomsky <insert id>
-- Natali Avromov <insert id>
+- Omer Chomsky (insert id)
+- Natali Avromov (insert id)
 
 ### Bonuses
 - Colorful game support
