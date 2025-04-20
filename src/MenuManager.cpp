@@ -49,6 +49,7 @@ void MenuManager::openMenu() {
     }
 }
 
+// GPT prompt - summarize me the game rules
 void MenuManager::showInstructionsAndKeys() {
     std::cout << "==================== TANK BATTLE - GAME INSTRUCTIONS ====================\n\n";
 
@@ -59,8 +60,7 @@ void MenuManager::showInstructionsAndKeys() {
 
     std::cout << ">> MOVEMENT CONTROLS <<\n";
     std::cout << "Each tank has 2 tracks. You control each track separately.\n";
-    std::cout << "Movement continues automatically until 'STAY' is pressed.\n";
-    std::cout << "Input is case-insensitive.\n\n";
+    std::cout << "Movement continues automatically until 'STAY' is pressed.\n\n";
 
     std::cout << "Player 1 Controls:\n";
     std::cout << "  Q - Left Track Forward    A - Left Track Backward\n";
@@ -88,9 +88,9 @@ void MenuManager::showInstructionsAndKeys() {
     std::cout << ">> GAME RULES <<\n";
     std::cout << "- Tanks die if hit by a shell or step on a mine.\n";
     std::cout << "- Shells can destroy other shells on contact.\n";
-    std::cout << "- Cannon hit? Tank survives but loses cannon.\n";
+    std::cout << "- Cannon hit - tank survives but loses cannon.\n";
     std::cout << "- Mines are hidden under cannons.\n";
-    std::cout << "- Walls fall after 2 shell hits (optional weakened visual).\n";
+    std::cout << "- Walls fall after 2 shell hits.\n";
     std::cout << "- Map boundaries wrap around (teleport to other side).\n";
     std::cout << "- After shooting, a 5-cycle cooldown is applied.\n\n";
 
