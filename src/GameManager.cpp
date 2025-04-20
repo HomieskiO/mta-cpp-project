@@ -179,15 +179,8 @@ void GameManager::shoot(Tank* player) {
 
 void GameManager::updateGame() {
 	if (!tankMovementCooldown) {
-		int nextX1, nextY1, nextX2, nextY2;
-		player1->getNextPosition(nextX1, nextY1);
-		if (!isWallAtPos(nextX1, nextY1)) {
-			player1->moveToPoint(nextX1, nextY1);
-		}
-		player2->getNextPosition(nextX2, nextY2);
-		if (!isWallAtPos(nextX2, nextY2)) {
-			player2->moveToPoint(nextX2, nextY2);
-		}
+		player1->move();
+		player2->move();
 	}
 
 	for (auto it = shells.begin(); it != shells.end(); ) {
@@ -420,12 +413,4 @@ void GameManager::gameOver() {
 	}
 	std::cout << "Game ended. Press any key to return to the main menu...\n";
 	_getch();
-}
-
-bool GameManager::isWallAtPos(int x, int y) {
-	for (const Wall& wall : walls) {
-		if (wall.isAlive() && wall.getX() == x && wall.getY() == y)
-			return true;
-	}
-	return false;
 }

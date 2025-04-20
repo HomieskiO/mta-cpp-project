@@ -41,7 +41,6 @@ public:
     int getLastRotation() const;
     void rotateCannon(int angle);
     void move();
-    void moveToPoint(int nextX, int nextY);
     bool canShoot();
 	void draw() const override;
 	int getCannonX() const;
