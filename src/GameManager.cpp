@@ -101,8 +101,10 @@ void GameManager::gameLoop() {
 			break;
 		}
 		if (!isPaused) {
-			handlePlayerInput(player1);
-			handlePlayerInput(player2);
+			if (!tankMovementCooldown) {
+				handlePlayerInput(player1);
+				handlePlayerInput(player2);
+			}
 
 			updateGame();
 			drawGameObjects();
@@ -115,6 +117,7 @@ void GameManager::gameLoop() {
 	}
 }
 
+// GPT prompt - give me a function that gets keyboard inputs async
 bool GameManager::isKeyPressed(int keyCode) {
 	return GetAsyncKeyState(keyCode) & 0x8000;
 }
@@ -287,17 +290,19 @@ void GameManager::checkTanksWallsCollisions(Tank* player) {
 	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
 		bool isTankHittingWall = player->collidesWith(*wallIt);
 		bool isCannonHittingWall = player->getCannon() && player->getCannon()->collidesWith(*wallIt);
-		
-		// hitting a wall while moving
-		if (player->getMovementState() != MovementState::STAY && (isTankHittingWall || isCannonHittingWall)) {
+	
+		if (player->getMovementState() == MovementState::STAY && isCannonHittingWall) {
+			player->rotateCannon(-player->getLastRotation());
+		}
+		else if (player->getMovementState() != MovementState::STAY && (isTankHittingWall || isCannonHittingWall)) {
 			player->setX(player->getPrevX());
 			player->setY(player->getPrevY());
 			player->alignCannon();
+			isCannonHittingWall = player->getCannon() && player->getCannon()->collidesWith(*wallIt);
+			if (isCannonHittingWall) {
+				player->rotateCannon(-player->getLastRotation());
+			}
 			player->setMovementState(MovementState::STAY);
-		}
-		// hitting a wall rotating in place
-		else if (player->getMovementState() == MovementState::STAY && isCannonHittingWall) {
-			player->rotateCannon(-player->getLastRotation());
 		}
 		++wallIt;
 	}

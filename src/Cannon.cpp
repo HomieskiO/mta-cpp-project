@@ -81,3 +81,8 @@ void Cannon::alignWithTank(int tankX, int tankY) {
 		y = BOARD_HEIGHT;
 	}
 }
+
+Cannon::~Cannon() {
+	gotoxy(x, y);
+	std::cout << " ";
+}
