@@ -112,6 +112,7 @@ void GameManager::gameLoop() {
 
 			updateGame();
 			drawGameObjects();
+			drawGameInfo();
 			if (checkGameOver()) {
 				gameOver();
 			}
@@ -126,6 +127,7 @@ bool GameManager::isKeyPressed(int keyCode) {
 
 void GameManager::handlePlayerInput(Tank* player) {
 	PlayerControls controls = player->getControls();
+
 	if (isKeyPressed(controls.shoot)) {
 		this->shoot(player);
 	}
@@ -168,6 +170,9 @@ void GameManager::handlePlayerInput(Tank* player) {
 void GameManager::shoot(Tank* player) {
 	if (player->canShoot()) {
 		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection(), player->getColor()));
+
+		// spawn shell one step further to prevent ruining your own cannon while moving
+		shells.back()->move();
 		player->setCooldown(SHOOT_COOLDOWN + 1);
 	}
 }
@@ -266,11 +271,6 @@ void GameManager::checkShellShellsCollisions(Shell* shell, bool& collided) {
 
 }
 
-void GameManager::checkTanksMinesCollisions() {
-	checkTankOnMine(player1);
-	checkTankOnMine(player2);
-}
-
 void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
 		if (shell->collidesWith(*wallIt)) {
@@ -291,10 +291,40 @@ void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 	}
 }
 
+void GameManager::checkTanksMinesCollisions() {
+	checkTankOnMine(player1);
+	checkTankOnMine(player2);
+}
+
+void GameManager::checkTanksWallsCollisions(Tank* player) {
+	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
+		bool isTankHittingWall = player->collidesWith(*wallIt);
+		bool isCannonHittingWall = player->getCannon() && player->getCannon()->collidesWith(*wallIt);
+		
+		// hitting a wall while moving
+		if (player->getMovementState() != MovementState::STAY && (isTankHittingWall || isCannonHittingWall)) {
+			player->setX(player->getPrevX());
+			player->setY(player->getPrevY());
+			player->alignCannon();
+			player->setMovementState(MovementState::STAY);
+		}
+		// hitting a wall rotating in place
+		else if (player->getMovementState() == MovementState::STAY && isCannonHittingWall) {
+			player->rotateCannon(-player->getLastRotation());
+		}
+		++wallIt;
+	}
+}
+
+void GameManager::checkTanksCollisions() {
+	checkTanksMinesCollisions();
+	checkTanksWallsCollisions(player1);
+	checkTanksWallsCollisions(player2);
+}
+
 void GameManager::checkCollisions() {
 	checkShellsCollisions();
-	checkTanksMinesCollisions();
-
+	checkTanksCollisions();
 }
 
 void GameManager::checkTankOnMine(Tank* player) {
@@ -321,8 +351,6 @@ bool GameManager::checkGameOver() {
 }
 
 void GameManager::drawGameObjects() {
-	clearScreen();
-
 	for (const Wall& wall : walls) {
 		wall.draw();
 	}
@@ -342,6 +370,13 @@ void GameManager::drawGameObjects() {
 
 bool GameManager::isInBoard(GameObject* object) {
 	return object->getX() >= 0 && object->getX() < BOARD_WIDTH && object->getY() >= 0 && object->getY() < BOARD_HEIGHT;
+}
+
+void GameManager::drawGameInfo() {
+	gotoxy(BOARD_WIDTH / 3, BOARD_HEIGHT);
+	if (player1->isAlive() && player2->isAlive()) {
+		std::cout << "Player 1 Lives: 1\tPlayer 2 Lives: 1";
+	}
 }
 
 void GameManager::pauseGame() {

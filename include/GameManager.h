@@ -54,12 +54,14 @@ private:
     void checkTankOnMine(Tank* player);
     void checkCollisions();
     void checkShellsCollisions();
+    void checkTanksCollisions();
     void checkShellTanksCollisions(Shell* shell, bool& collided);
     void checkShellCannonsCollisions(Shell* shell, bool& collided);
     void checkShellShellsCollisions(Shell* shell, bool& collided);
     void checkShellWallsCollisions(Shell* shell, bool& collided);
     void checkTanksMinesCollisions();
-    bool isWallAtPos(int x, int y);
+    void checkTanksWallsCollisions(Tank* player);
+    void drawGameInfo();
 
 public:
     GameManager(bool coloredGame);

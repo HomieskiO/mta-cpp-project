@@ -1,5 +1,7 @@
 #include "Cannon.h"
 #include "GameManager.h"
+#include "IOUtils.h"
+#include <iostream>
 
 Cannon::Cannon(int tankX, int tankY, Direction tankDirection) : GameObject('|', tankX, tankY - 1) {
 	this->tankX = tankX;
@@ -15,6 +17,9 @@ Cannon::Cannon(int tankX, int tankY, Direction tankDirection, int color) : GameO
 
 void Cannon::rotateCannon(Direction tankDirection) {
 	this->tankDirection = tankDirection;
+
+	int prevX = x;
+	int prevY = y;
 
 	switch (tankDirection) {
 	case Direction::UP:
@@ -57,6 +62,11 @@ void Cannon::rotateCannon(Direction tankDirection) {
 		this->y = tankY;
 		this->symbol = '-';
 		break;
+	}
+
+	if (prevX != x || prevY != y) {
+		gotoxy(prevX, prevY);
+		std::cout << " ";
 	}
 }
 

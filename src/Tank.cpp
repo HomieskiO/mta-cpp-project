@@ -3,6 +3,7 @@
 #include "Cannon.h"
 #include "Shell.h"
 #include <iostream>
+#include "IOUtils.h"
 #include "GameManager.h"
 
 Tank::Tank(int x, int y, PlayerControls controls) : MovingObject(TANK_SYMBOL, x, y, Direction::UP, MovementState::STAY) {
@@ -10,6 +11,7 @@ Tank::Tank(int x, int y, PlayerControls controls) : MovingObject(TANK_SYMBOL, x,
     this->cannon = new Cannon(x, y, direction);
 	this->shell = nullptr;
 	this->cooldown = 0;
+	this->lastRotation = 0;
 }
 
 Tank::Tank(int x, int y, PlayerControls controls, int color) : MovingObject(TANK_SYMBOL, x, y, Direction::UP, MovementState::STAY, color) {
@@ -17,6 +19,7 @@ Tank::Tank(int x, int y, PlayerControls controls, int color) : MovingObject(TANK
 	this->cannon = new Cannon(x, y, direction, color);
 	this->shell = nullptr;
 	this->cooldown = 0;
+	this->lastRotation = 0;
 }
 
 PlayerControls Tank::getControls() const {
@@ -27,12 +30,18 @@ void Tank::setControls(PlayerControls controls) {
 	this->controls = controls;
 }
 
+int Tank::getLastRotation() const {
+	return lastRotation;
+}
+
 void Tank::rotateCannon(int angle) { 
+	lastRotation = angle;
+
     int dirIndex = static_cast<int>(direction);
     int steps = angle / 45;
     int newIndex = (dirIndex + steps + 8) % 8;
 
-    direction = static_cast<Direction>(newIndex);
+    MovingObject::setDirection(static_cast<Direction>(newIndex));
 	if (cannon) {
 		cannon->rotateCannon(direction);
 	}
@@ -41,6 +50,10 @@ void Tank::rotateCannon(int angle) {
 void Tank::move() {
 	MovingObject::move();
 
+	alignCannon();
+}
+
+void Tank::alignCannon() {
 	if (cannon) {
 		cannon->alignWithTank(x, y);
 	}
@@ -59,7 +72,7 @@ bool Tank::canShoot() {
 }
 
 void Tank::draw() const {
-    GameObject::draw();
+    MovingObject::draw();
 	if (cannon) {
 		cannon->draw();
 	}
