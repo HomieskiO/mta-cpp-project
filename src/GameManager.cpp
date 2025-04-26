@@ -8,8 +8,8 @@ GameManager::GameManager(bool coloredGame) {
 	this->coloredGame = coloredGame;
 	isRunning = false;
 	isPaused = false;
-	player1 = nullptr;
-	player2 = nullptr;
+	player1Tanks = {};
+	player2Tanks = {};
 	shells = {};
 
 	tankMovementCooldown = false;
@@ -37,8 +37,13 @@ void GameManager::generateTanks() {
 		player2Color = WHITE_COLOR;
 	}
 
-	player1 = new Tank(6, 3, P1_CONTROLS, player1Color);
-	player2 = new Tank(72, 22, P2_CONTROLS, player2Color);
+	player1Tanks.push_back(new Tank(6, 6, P1_CONTROLS, player1Color));
+	player1Tanks.push_back(new Tank(10, 3, P1_CONTROLS, player1Color));
+	player2Tanks.push_back(new Tank(72, 22, P2_CONTROLS, player2Color));
+	player2Tanks.push_back(new Tank(10, 7, P2_CONTROLS, player2Color));
+
+	player1ActiveTank = 0;
+	player2ActiveTank = 0;
 }
 
 void GameManager::generateWalls() {
@@ -102,8 +107,8 @@ void GameManager::gameLoop() {
 		}
 		if (!isPaused) {
 			if (!tankMovementCooldown) {
-				handlePlayerInput(player1);
-				handlePlayerInput(player2);
+				handlePlayerInput(player1Tanks, player1ActiveTank);
+				handlePlayerInput(player2Tanks, player2ActiveTank);
 			}
 
 			updateGame();
@@ -122,9 +127,15 @@ bool GameManager::isKeyPressed(int keyCode) {
 	return GetAsyncKeyState(keyCode) & 0x8000;
 }
 
-void GameManager::handlePlayerInput(Tank* player) {
-	PlayerControls controls = player->getControls();
+void GameManager::handlePlayerInput(std::vector<Tank*>& playerTanks, int& activeTankIndex) {
+	PlayerControls controls = playerTanks[activeTankIndex]->getControls();
 
+	if (isKeyPressed(controls.switchActiveTank)) {
+		activeTankIndex = (++activeTankIndex) % playerTanks.size();
+	}
+
+	Tank* player = playerTanks[activeTankIndex];
+	
 	if (isKeyPressed(controls.shoot)) {
 		this->shoot(player);
 	}
@@ -174,10 +185,16 @@ void GameManager::shoot(Tank* player) {
 	}
 }
 
+void GameManager::moveTanks(std::vector<Tank*> player) {
+	for (auto& tank : player) {
+		tank->move();
+	}
+}
+
 void GameManager::updateGame() {
 	if (!tankMovementCooldown) {
-		player1->move();
-		player2->move();
+		moveTanks(player1Tanks);
+		moveTanks(player2Tanks);
 	}
 
 	for (auto it = shells.begin(); it != shells.end(); ) {
@@ -201,8 +218,10 @@ void GameManager::checkShellsCollisions() {
 		Shell* shell = *it;
 		bool collided = false;
 
-		checkShellTanksCollisions(shell, collided);
-		checkShellCannonsCollisions(shell, collided);
+		checkShellTanksCollisions(shell, player1Tanks, player1ActiveTank, collided);
+		checkShellTanksCollisions(shell, player2Tanks, player2ActiveTank, collided);
+		checkShellCannonsCollisions(shell, player1Tanks, collided);
+		checkShellCannonsCollisions(shell, player2Tanks, collided);
 		checkShellShellsCollisions(shell, collided);
 		checkShellWallsCollisions(shell, collided);
 
@@ -216,24 +235,50 @@ void GameManager::checkShellsCollisions() {
 	}
 }
 
-void GameManager::checkShellTanksCollisions(Shell* shell, bool& collided) {
-	if (shell && shell->collidesWith(player1)) {
-		player1->setState(false);
-		collided = true;
+void GameManager::removeDeadTanks(std::vector<Tank*>& playerTanks, int& activeTankIndex) {
+	int currentTankIndex = 0;
+	for (auto it = playerTanks.begin(); it != playerTanks.end();) {
+		Tank* tank = *it;
+		if (!tank->isAlive()) {
+			delete tank;
+			it = playerTanks.erase(it);
+			if (currentTankIndex < activeTankIndex) {
+				activeTankIndex--;
+			}
+			else if (currentTankIndex == activeTankIndex && playerTanks.size()) {
+				activeTankIndex = activeTankIndex % playerTanks.size();
+			}
+
+		} else{
+			it++;
+		}
+		currentTankIndex++;
 	}
-	else if (shell && shell->collidesWith(player2)) {
-		player2->setState(false);
+}
+
+void GameManager::checkShellTanksCollisions(Shell* shell, std::vector<Tank*>& playerTanks, int& activeTankIndex, bool& collided) {
+	for (auto& tank : playerTanks) {
+		checkShellTankCollisions(shell, tank, collided);
+	}
+	removeDeadTanks(playerTanks, activeTankIndex);
+}
+
+void GameManager::checkShellTankCollisions(Shell* shell, Tank* tank, bool& collided) {
+	if (shell && shell->collidesWith(tank)) {
+		tank->setState(false);
 		collided = true;
 	}
 }
 
-void GameManager::checkShellCannonsCollisions(Shell* shell, bool& collided) {
-	if (shell && player1->getCannon() && shell->collidesWith(player1->getCannon())) {
-		player1->removeCannon();
-		collided = true;
+void GameManager::checkShellCannonsCollisions(Shell* shell, std::vector<Tank*>& playerTanks, bool& collided) {
+	for (auto& tank : playerTanks) {
+		checkShellCannonCollisions(shell, tank, collided);
 	}
-	else if (shell && player2->getCannon() && shell->collidesWith(player2->getCannon())) {
-		player2->removeCannon();
+}
+
+void GameManager::checkShellCannonCollisions(Shell* shell, Tank* tank, bool& collided) {
+	if (shell && tank->getCannon() && shell->collidesWith(tank->getCannon())) {
+		tank->removeCannon();
 		collided = true;
 	}
 }
@@ -281,12 +326,14 @@ void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 	}
 }
 
-void GameManager::checkTanksMinesCollisions() {
-	checkTankOnMine(player1);
-	checkTankOnMine(player2);
+void GameManager::checkTanksMinesCollisions(std::vector <Tank*>& playerTanks, int& activeTankIndex) {
+	for (auto& tank : playerTanks) {
+		checkTankOnMine(tank);
+	}
+	removeDeadTanks(playerTanks, activeTankIndex);
 }
 
-void GameManager::checkTanksWallsCollisions(Tank* player) {
+void GameManager::checkTankWallsCollisions(Tank* player) {
 	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
 		bool isTankHittingWall = player->collidesWith(*wallIt);
 		bool isCannonHittingWall = player->getCannon() && player->getCannon()->collidesWith(*wallIt);
@@ -308,10 +355,17 @@ void GameManager::checkTanksWallsCollisions(Tank* player) {
 	}
 }
 
+void GameManager::checkTanksWallsCollisions(std::vector<Tank*> playerTanks) {
+	for (auto& tank : playerTanks) {
+		checkTankWallsCollisions(tank);
+	}
+}
+
 void GameManager::checkTanksCollisions() {
-	checkTanksMinesCollisions();
-	checkTanksWallsCollisions(player1);
-	checkTanksWallsCollisions(player2);
+	checkTanksMinesCollisions(player1Tanks, player1ActiveTank);
+	checkTanksMinesCollisions(player2Tanks, player2ActiveTank);
+	checkTanksWallsCollisions(player1Tanks);
+	checkTanksWallsCollisions(player2Tanks);
 }
 
 void GameManager::checkCollisions() {
@@ -319,27 +373,31 @@ void GameManager::checkCollisions() {
 	checkTanksCollisions();
 }
 
-void GameManager::checkTankOnMine(Tank* player) {
+void GameManager::checkTankOnMine(Tank* tank) {
 	for (const Mine& mine : mines) {
-		if (player->collidesWith(mine)) {
-			player->setState(false);
+		if (tank->collidesWith(mine)) {
+			tank->setState(false);
 		}
 	}
 }
 
 void GameManager::updateCooldowns() {
-	if (player1->getCooldown() > 0) {
-		player1->setCooldown(player1->getCooldown() - 1);
+	for (auto& tank : player1Tanks) {
+		if (tank->getCooldown() > 0) {
+			tank->setCooldown(tank->getCooldown() - 1);
+		}
 	}
-	if (player2->getCooldown() > 0) {
-		player2->setCooldown(player2->getCooldown() - 1);
+	for (auto& tank : player2Tanks) {
+		if (tank->getCooldown() > 0) {
+			tank->setCooldown(tank->getCooldown() - 1);
+		}
 	}
 
 	tankMovementCooldown = !tankMovementCooldown;
 }
 
 bool GameManager::checkGameOver() {
-	return !player1->isAlive() || !player2->isAlive();
+	return player1Tanks.empty() || player2Tanks.empty();
 }
 
 void GameManager::drawGameObjects() {
@@ -350,8 +408,13 @@ void GameManager::drawGameObjects() {
 		mine.draw();
 	}
 
-	player1->draw();
-	player2->draw();
+	for (auto& tank : player1Tanks) {
+		tank->draw();
+	}
+
+	for (auto& tank : player2Tanks) {
+		tank->draw();
+	}
 
 	for (auto shell : shells) {
 		if (shell != nullptr) {
@@ -365,10 +428,10 @@ bool GameManager::isInBoard(GameObject* object) {
 }
 
 void GameManager::drawGameInfo() {
-	gotoxy(BOARD_WIDTH / 3, BOARD_HEIGHT);
-	if (player1->isAlive() && player2->isAlive()) {
-		std::cout << "Player 1 Lives: 1\tPlayer 2 Lives: 1";
-	}
+	gotoxy(0, BOARD_HEIGHT);
+	
+	std::cout << "Player 1 Active Tank: " << player1ActiveTank << "\t\tPlayer 1 Lives: " << player1Tanks.size() << "\t\t";
+	std::cout << "Player 2 Active Tank: " << player2ActiveTank << "\t\tPlayer 2 Lives: " << player2Tanks.size();
 }
 
 void GameManager::pauseGame() {
@@ -401,15 +464,25 @@ void GameManager::gameOver() {
 	isRunning = false;
 	clearScreen();
 
-	if (!player1->isAlive() && !player2->isAlive()) {
+	if (!player1Tanks.size() && !player2Tanks.size()) {
 		std::cout << "Game tied.\n";
 	}
-	else if (!player1->isAlive()) { 
+	else if (!player1Tanks.size()) { 
 		std::cout << "Player 2 Wins!\n"; 
 	}
-	else if (!player2->isAlive()) { 
+	else if (!player2Tanks.size()) { 
 		std::cout << "Player 1 Wins!\n"; 
 	}
 	std::cout << "Game ended. Press any key to return to the main menu...\n";
 	_getch();
+}
+
+GameManager::~GameManager() {
+	for (auto& tank : player1Tanks) {
+		delete tank;
+	}
+
+	for (auto& tank : player2Tanks) {
+		delete tank;
+	}
 }

@@ -98,3 +98,9 @@ void Tank::removeCannon() {
 int Tank::getColor() {
 	return color;
 }
+
+Tank::~Tank() {
+	delete cannon;
+	gotoxy(x, y);
+	std::cout << " ";
+}

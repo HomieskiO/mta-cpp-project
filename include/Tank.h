@@ -15,14 +15,15 @@ struct PlayerControls {
     int rightTrackBackward;
     int stay;
     int shoot;
+    int switchActiveTank;
 };
 
 constexpr PlayerControls P1_CONTROLS = {
-    'Q', 'A', 'E', 'D', 'S', 'W'
+    'Q', 'A', 'E', 'D', 'S', 'W', 'Z'
 };
 
 constexpr PlayerControls P2_CONTROLS = {
-    'U', 'J', 'O', 'L', 'K', 'I'
+    'U', 'J', 'O', 'L', 'K', 'I', 'M'
 };
 
 
@@ -51,4 +52,5 @@ public:
     void removeCannon();
     int getColor();
     void alignCannon();
+    ~Tank();
 };
