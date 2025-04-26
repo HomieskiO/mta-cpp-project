@@ -26,8 +26,10 @@ private:
     bool coloredGame;
     bool isRunning;
     bool isPaused;
-    Tank* player1;
-    Tank* player2;
+    std::vector<Tank*> player1Tanks;
+    int player1ActiveTank;
+    std::vector<Tank*> player2Tanks;
+    int player2ActiveTank;
 
     std::vector<Shell*> shells;
     std::vector<Mine> mines;
@@ -45,25 +47,31 @@ private:
     void updateCooldowns();
     bool checkGameOver();
     void gameOver();
-    void handlePlayerInput(Tank* player);
+    void handlePlayerInput(std::vector<Tank*>& playerTanks, int& activeTankIndex);
     void shoot(Tank* player);
     static bool isKeyPressed(int key);
     bool isInBoard(GameObject* object);
     void generateMines();
     void generateWalls();
+    void moveTanks(std::vector<Tank*> player);
     void checkTankOnMine(Tank* player);
     void checkCollisions();
     void checkShellsCollisions();
     void checkTanksCollisions();
-    void checkShellTanksCollisions(Shell* shell, bool& collided);
-    void checkShellCannonsCollisions(Shell* shell, bool& collided);
+    void removeDeadTanks(std::vector<Tank*>& playerTanks, int& activeTankIndex);
+    void checkShellTanksCollisions(Shell* shell, std::vector<Tank*>& playerTanks, int& activeTankIndex,  bool& collided);
+    void checkShellTankCollisions(Shell* shell, Tank* tank, bool& collided);
+    void checkShellCannonsCollisions(Shell* shell, std::vector<Tank*>& playerTanks, bool& collided);
+    void checkShellCannonCollisions(Shell* shell, Tank* tank, bool& collided);
     void checkShellShellsCollisions(Shell* shell, bool& collided);
     void checkShellWallsCollisions(Shell* shell, bool& collided);
-    void checkTanksMinesCollisions();
-    void checkTanksWallsCollisions(Tank* player);
+    void checkTanksMinesCollisions(std::vector <Tank*>& playerTanks, int& activeTankIndex);
+    void checkTanksWallsCollisions(std::vector<Tank*> player);
+    void checkTankWallsCollisions(Tank* player);
     void drawGameInfo();
 
 public:
     GameManager(bool coloredGame);
     void startGame();
+    ~GameManager();
 };
