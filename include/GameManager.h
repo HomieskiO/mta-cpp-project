@@ -37,8 +37,7 @@ private:
     
     bool tankMovementCooldown;
 
-    void initializeGameObjects();
-    void generateTanks();
+    bool initializeGameObjects(const std::string& filename);
     void gameLoop();
     void pauseGame();
     void resumeGame();
@@ -51,8 +50,6 @@ private:
     void shoot(Tank* player);
     static bool isKeyPressed(int key);
     bool isInBoard(GameObject* object);
-    void generateMines();
-    void generateWalls();
     void moveTanks(std::vector<Tank*> player);
     void checkTankOnMine(Tank* player);
     void checkCollisions();

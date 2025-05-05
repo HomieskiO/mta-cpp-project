@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 #include "GameManager.h"
 #include "Screen.h"
 
@@ -17,7 +18,6 @@ public:
     MenuManager();
     void openMenu();
 
-    const std::string& getSelectedScreenFile() const { return selectedScreenFile; }
 
 private:
     GameManager* gameManager;
@@ -26,6 +26,6 @@ private:
     std::vector<Screen> screens;
     std::string selectedScreenFile;
 
-    void changeScreen();
+    void displayChangeScreenMenu();
     void showInstructionsAndKeys();
 };

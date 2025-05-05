@@ -12,7 +12,7 @@ Screen::Screen(const std::string& screenName)
 
 bool Screen::loadAllScreenFiles(std::vector<Screen>& screens) {
 	screens.clear();
-	// ChatGPT prompt - iterate over a directory and find all files matching a regex pattern
+	// ChatGPT prompt - sort a directory and find all files matching a regex pattern
     const std::string path = "../screens";
     const std::regex pattern(R"(.*\.screen)");
 

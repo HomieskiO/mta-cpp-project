@@ -30,7 +30,7 @@ void MenuManager::openMenu() {
         case START_GAME:
             clearScreen();
             gameManager = new GameManager(coloredGame);
-                // add constructor for new GameManager(coloredGame, selectedScreenFile);
+                // add constructor for new GameManager(coloredGame, screenFile);
             gameManager->startGame();
             delete gameManager;
             choice = 0;
@@ -38,7 +38,7 @@ void MenuManager::openMenu() {
 
         case CHANGE_GAME_SCREEN:
             clearScreen();
-            changeScreen();
+            displayChangeScreenMenu();
             choice = 0;
             break;
 
@@ -63,12 +63,12 @@ void MenuManager::openMenu() {
     }
 }
 
-void MenuManager::changeScreen() {
+void MenuManager::displayChangeScreenMenu() {
     clearScreen();
     std::cout << "===================== TANK BATTLE - SCREEN SETTINGS =====================\n\n";
 
     if (!Screen::loadAllScreenFiles(screens)) {
-        std::cout << "No valid screen files found (must match tanks-game*.screen).\n";
+        std::cout << "No valid screen files found (must match *.screen).\n";
         std::cout << "Press any key to return...\n";
         _getch();
         return;

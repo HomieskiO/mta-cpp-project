@@ -1,5 +1,6 @@
 #include "GameManager.h"
 #include <iostream>
+#include <fstream> 
 #include "IOUtils.h"
 #include <conio.h>
 #include <windows.h>
@@ -17,81 +18,43 @@ GameManager::GameManager(bool coloredGame) {
 
 void GameManager::startGame() {
 	isRunning = true;
-	initializeGameObjects();
+	std::string currentScreen = "../screens/tanks-game_03.screen"; // change this to selectedScreenFile;
+	initializeGameObjects(currentScreen);
 	hideCursor();
 	gameLoop();
 }
 
-void GameManager::initializeGameObjects() {
-	generateTanks();
-	generateWalls();
-	generateMines();
+
+bool GameManager::initializeGameObjects(const std::string& filename) {
+	std::ifstream inFile(filename);
+	if (!inFile) {
+		std::cerr << "Failed to open screen file: " << filename << "\n";
+		return false;
+	}
+
+	int player1Color = coloredGame ? PLAYER_1_COLOR : WHITE_COLOR;
+	int player2Color = coloredGame ? PLAYER_2_COLOR : WHITE_COLOR;
+	int wallColor = coloredGame ? WALL_COLOR : WHITE_COLOR;
+	int mineColor = coloredGame ? MINE_COLOR : WHITE_COLOR;
+
+	std::string line;
+	int y = 0;
+	while (std::getline(inFile, line) && y < BOARD_HEIGHT) {
+		for (int x = 0; x < line.size() && x < BOARD_WIDTH; ++x) {
+			char ch = line[x];
+			switch (ch) {
+			case '#': walls.push_back(Wall(x, y, wallColor)); break;
+			case '@': mines.push_back(Mine(x, y, mineColor)); break;
+			case '1': player1Tanks.push_back(new Tank(x, y, P1_CONTROLS, player1Color)); break;
+			case '2': player2Tanks.push_back(new Tank(x, y, P2_CONTROLS, player2Color)); break;
+			//case 'L': Not sure if this needed
+			}
+		}
+		y++;
+	}
+
+	return true;
 }
-
-void GameManager::generateTanks() {
-	int player1Color = PLAYER_1_COLOR;
-	int player2Color = PLAYER_2_COLOR;
-
-	if (!coloredGame) {
-		player1Color = WHITE_COLOR;
-		player2Color = WHITE_COLOR;
-	}
-
-	player1Tanks.push_back(new Tank(6, 6, P1_CONTROLS, player1Color));
-	player1Tanks.push_back(new Tank(10, 3, P1_CONTROLS, player1Color));
-	player2Tanks.push_back(new Tank(72, 22, P2_CONTROLS, player2Color));
-	player2Tanks.push_back(new Tank(10, 7, P2_CONTROLS, player2Color));
-
-	player1ActiveTank = 0;
-	player2ActiveTank = 0;
-}
-
-void GameManager::generateWalls() {
-	int color = WALL_COLOR;
-	if (!coloredGame) {
-		color = WHITE_COLOR;
-	}
-
-	for (int x = 20; x < 60; ++x) {
-		walls.push_back(Wall(x, 12, color));
-	}
-
-	for (int y = 5; y < 20; ++y) {
-		walls.push_back(Wall(30, y, color));
-		walls.push_back(Wall(50, y, color));
-	}
-
-	for (int x = 5; x < 20; ++x)
-		walls.push_back(Wall(x, 4, color));
-	for (int y = 4; y < 10; ++y)
-		walls.push_back(Wall(5, y, color));
-
-	for (int x = 60; x < 75; ++x)
-		walls.push_back(Wall(x, 19, color));
-	for (int y = 14; y < 20; ++y)
-		walls.push_back(Wall(74, y, color));
-
-	for (int x = 35; x < 45; ++x)
-		walls.push_back(Wall(x, 2, color));
-
-	for (int i = 0; i < 10; ++i)
-		walls.push_back(Wall(10 + i, 14 + i, color));
-}
-
-void GameManager::generateMines() {
-	int color = MINE_COLOR;
-	if (!coloredGame) {
-		color = WHITE_COLOR;
-	}
-
-	mines.push_back(Mine(22, 8, color));
-	mines.push_back(Mine(18, 18, color));
-	mines.push_back(Mine(45, 5, color));
-	mines.push_back(Mine(55, 15, color));
-	mines.push_back(Mine(68, 10, color));
-	mines.push_back(Mine(6, 21, color));
-}
-
 
 
 void GameManager::gameLoop() {
