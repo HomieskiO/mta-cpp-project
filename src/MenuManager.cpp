@@ -1,52 +1,95 @@
-#include "MenuManager.h"
 #include <conio.h>
 #include <windows.h>
+#include "MenuManager.h"
 #include "IOUtils.h"
+#include "Screen.h"
+
 
 MenuManager::MenuManager() {
     gameManager = nullptr;
     coloredGame = true;
+    selectedScreenFile = "";
 }
 
 void MenuManager::openMenu() {
     char choice = 0;
-
     while (choice != START_GAME && choice != INSTRUCTIONS && choice != EXIT) {
         clearScreen();
         std::cout << "=== Main Menu ===\n";
         std::cout << "(1) Start a new Game\n";
-        if (coloredGame) {
-            std::cout << "(7) Switch to black and white game\n";
-        }
-        else {
-            std::cout << "(7) Switch to colored game\n";
-        }
+        std::cout << "(6) Choose Game Screen\n";
+        std::cout << (coloredGame
+            ? "(7) Switch to black and white game\n"
+            : "(7) Switch to colored game\n");
         std::cout << "(8) Present instructions and keys\n";
         std::cout << "(9) EXIT\n\n";
         std::cout << "Choose an option: ";
         choice = tolower(_getch());
 
-        if (choice == START_GAME) {
+        switch (choice) {
+        case START_GAME:
             clearScreen();
-			gameManager = new GameManager(coloredGame);
+            gameManager = new GameManager(coloredGame);
+                // add constructor for new GameManager(coloredGame, selectedScreenFile);
             gameManager->startGame();
-			delete gameManager;
-            choice = 0; // Reset choice to show menu again
-        }
-        else if (choice == CHANGE_GAME_COLOR) {
+            delete gameManager;
+            choice = 0;
+            break;
+
+        case CHANGE_GAME_SCREEN:
+            clearScreen();
+            changeScreen();
+            choice = 0;
+            break;
+
+        case CHANGE_GAME_COLOR:
             coloredGame = !coloredGame;
-        }
-        else if (choice == INSTRUCTIONS) {
+            break;
+
+        case INSTRUCTIONS:
             clearScreen();
             showInstructionsAndKeys();
-            choice = 0; // Reset choice to show menu again
-        }
-        else if (choice == EXIT) {
+            choice = 0;
+            break;
+
+        case EXIT:
             std::cout << "\nExiting game...\n";
             Sleep(FRAME_RATE_MS);
+            return;
+
+        default:
             break;
         }
     }
+}
+
+void MenuManager::changeScreen() {
+    clearScreen();
+    std::cout << "===================== TANK BATTLE - SCREEN SETTINGS =====================\n\n";
+
+    if (!Screen::loadAllScreenFiles(screens)) {
+        std::cout << "No valid screen files found (must match tanks-game*.screen).\n";
+        std::cout << "Press any key to return...\n";
+        _getch();
+        return;
+    }
+
+    Screen::displayScreensOptionsMenu(screens);
+
+    std::cout << "\nChoose a screen by number (1 - " << screens.size() << "): ";
+    char choice = _getch();
+    size_t index = choice - '1';
+
+    if (index < screens.size()) {
+        selectedScreenFile = screens[index].name;
+        std::cout << "\nScreen selected: " << selectedScreenFile << "\n";
+    }
+    else {
+        std::cout << "\nInvalid choice. Returning to menu.\n";
+    }
+
+    std::cout << "\nPress any key to continue...\n";
+    _getch();
 }
 
 // GPT prompt - summarize me the game rules
