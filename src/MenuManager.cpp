@@ -1,7 +1,7 @@
 #include <conio.h>
 #include <windows.h>
 #include "MenuManager.h"
-#include "IOUtils.h"
+#include "ioUtils.h"
 #include "Screen.h"
 
 
@@ -80,7 +80,7 @@ void MenuManager::displayChangeScreenMenu() {
     size_t index = choice - '1';
 
     if (index < screens.size()) {
-        selectedScreenFile = screens[index].name;
+        selectedScreenFile = SCREENS_DIR + screens[index].name;
         std::cout << "\nScreen selected: " << selectedScreenFile << "\n";
     }
     else {

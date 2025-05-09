@@ -28,8 +28,8 @@ void GameManager::startGame() {
 			screenFile = SCREENS_DIR + screens[0].name;
 		} else {
 			std::cerr << "No screen files found. Cannot start game.\n";
-			Sleep(100); // Give user time to read the message
-			return;
+			Sleep(10000); // Give user time to read the message
+			//return;
 		}
 	}
 

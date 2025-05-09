@@ -4,12 +4,13 @@
 #include <string>
 #include <algorithm>
 #include "GameManager.h"
+#include "Screen.h"
 
 constexpr auto START_GAME = '1';
 constexpr auto CHANGE_GAME_COLOR = '7';
+constexpr auto CHANGE_GAME_SCREEN = '6';
 constexpr auto INSTRUCTIONS = '8';
 constexpr auto EXIT = '9';
-constexpr auto SELECT_SCREEN = '2';
 
 class MenuManager {
 public:
@@ -19,10 +20,13 @@ public:
 private:
     GameManager* gameManager;
     bool coloredGame;
-    int selectedScreen;
+	std::string selectedScreenFile;
+	std::vector<Screen> screens;
 
     void showInstructionsAndKeys();
     void selectScreen();
     std::vector<std::string> getAvailableScreens();
     void displayScreens(const std::vector<std::string>& screens);
+	void displayChangeScreenMenu();
+
 };
