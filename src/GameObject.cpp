@@ -1,5 +1,5 @@
 #include "GameObject.h"
-#include "IOUtils.h"
+#include "ioUtils.h"
 
 GameObject::GameObject(char symbol, int x, int y) {
     this->symbol = symbol;

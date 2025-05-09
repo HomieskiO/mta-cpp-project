@@ -12,6 +12,8 @@ constexpr auto MINE_COLOR = 3;
 
 constexpr auto SCREENS_DIR = "../screens/";
 
+constexpr auto SCREEN_WIN_SCORE = 100;
+
 #include <vector>
 #include <Windows.h>
 #include <string>
@@ -33,14 +35,15 @@ private:
     int player1ActiveTank;
     std::vector<Tank*> player2Tanks;
     int player2ActiveTank;
+    int player1Score;
+    int player2Score;
 
     std::vector<Shell*> shells;
     std::vector<Mine> mines;
     std::vector<Wall> walls;
+    std::string screenFile;
     
     bool tankMovementCooldown;
-    std::string screenFile;
-
     bool initializeGameObjects(const std::string& filename);
     void gameLoop();
     void pauseGame();

@@ -14,6 +14,8 @@ GameManager::GameManager(bool coloredGame, const std::string& screenFile) {
 	player1Tanks = {};
 	player2Tanks = {};
 	shells = {};
+	player1Score = 0;
+	player2Score = 0;
 
 	tankMovementCooldown = false;
 }
@@ -407,8 +409,8 @@ bool GameManager::isInBoard(GameObject* object) {
 void GameManager::drawGameInfo() {
 	gotoxy(0, BOARD_HEIGHT);
 	
-	std::cout << "Player 1 Active Tank: " << player1ActiveTank << "\t\tPlayer 1 Lives: " << player1Tanks.size() << "\t\t";
-	std::cout << "Player 2 Active Tank: " << player2ActiveTank << "\t\tPlayer 2 Lives: " << player2Tanks.size();
+	std::cout << "Player 1 \tActive Tank: " << player1ActiveTank << "\t Lives: " << player1Tanks.size() << "\t Score: " << player1Score << "\n";
+	std::cout << "Player 2 \tActive Tank: " << player2ActiveTank << "\t Lives: " << player2Tanks.size() << "\t Score: " << player2Score;
 }
 
 void GameManager::pauseGame() {
@@ -442,15 +444,61 @@ void GameManager::gameOver() {
 	clearScreen();
 
 	if (!player1Tanks.size() && !player2Tanks.size()) {
-		std::cout << "Game tied.\n";
+		// Game tied, no points awarded
 	}
 	else if (!player1Tanks.size()) { 
-		std::cout << "Player 2 Wins!\n"; 
+		player2Score += SCREEN_WIN_SCORE;
 	}
 	else if (!player2Tanks.size()) { 
-		std::cout << "Player 1 Wins!\n"; 
+		player1Score += SCREEN_WIN_SCORE;
 	}
-	std::cout << "Game ended. Press any key to return to the main menu...\n";
+
+	// Load next screen if available
+	std::vector<Screen> screens;
+	if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {
+		// Find current screen index
+		size_t currentIndex = 0;
+		for (size_t i = 0; i < screens.size(); i++) {
+			if (SCREENS_DIR + screens[i].name == screenFile) {
+				currentIndex = i;
+				break;
+			}
+		}
+
+		// Try to load next screen
+		if (currentIndex + 1 < screens.size()) {
+			screenFile = SCREENS_DIR + screens[currentIndex + 1].name;
+			std::cout << "\t==========================================\n";
+			std::cout << "\t           LOADING NEXT LEVEL             \n";
+			std::cout << "\t==========================================\n";
+			std::cout << "\t" << screens[currentIndex + 1].name << "\n\n";
+			std::cout << "\tPress any key to continue...\n";
+			_getch();
+			startGame();
+			return;
+		}
+	}
+
+	// Only show scores at the end of the game
+	std::cout << "\n\t==========================================\n";
+	std::cout << "\t              FINAL RESULTS               \n";
+	std::cout << "\t==========================================\n";
+	std::cout << "\tPlayer 1: " << player1Score << "\n";
+	std::cout << "\tPlayer 2: " << player2Score << "\n\n";
+
+	if (player1Score > player2Score) {
+		std::cout << "\t\tPlayer 1 Wins the Game!\n";
+	}
+	else if (player2Score > player1Score) {
+		std::cout << "\t\tPlayer 2 Wins the Game!\n";
+	}
+	else {
+		std::cout << "\t\tThe Game is Tied!\n";
+	}
+
+	std::cout << "\n\t==========================================\n";
+	std::cout << "\tPress any key to return to the main menu...\n";
+	std::cout << "\t==========================================\n";
 	_getch();
 }
 
