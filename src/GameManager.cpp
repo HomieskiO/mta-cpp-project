@@ -28,8 +28,6 @@ void GameManager::startGame() {
 			screenFile = SCREENS_DIR + screens[0].name;
 		} else {
 			std::cerr << "No screen files found. Cannot start game.\n";
-			Sleep(10000); // Give user time to read the message
-			//return;
 		}
 	}
 
@@ -64,7 +62,7 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 			case '@': mines.push_back(Mine(x, y, mineColor)); break;
 			case '1': player1Tanks.push_back(new Tank(x, y, P1_CONTROLS, player1Color)); break;
 			case '2': player2Tanks.push_back(new Tank(x, y, P2_CONTROLS, player2Color)); break;
-			//case 'L': Not sure if this needed
+				//case 'L': Not sure yet what should I do with this
 			}
 		}
 		y++;
