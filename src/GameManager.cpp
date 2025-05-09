@@ -4,9 +4,11 @@
 #include "IOUtils.h"
 #include <conio.h>
 #include <windows.h>
+#include "Screen.h"
 
-GameManager::GameManager(bool coloredGame) {
+GameManager::GameManager(bool coloredGame, const std::string& screenFile) {
 	this->coloredGame = coloredGame;
+	this->screenFile = screenFile;
 	isRunning = false;
 	isPaused = false;
 	player1Tanks = {};
@@ -18,12 +20,27 @@ GameManager::GameManager(bool coloredGame) {
 
 void GameManager::startGame() {
 	isRunning = true;
-	std::string currentScreen = "../screens/tanks-game_03.screen"; // change this to selectedScreenFile;
-	initializeGameObjects(currentScreen);
+	
+	// If no screen file was chosen, get the first screen in lexicographic order
+	if (screenFile.empty()) {
+		std::vector<Screen> screens;
+		if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {
+			screenFile = SCREENS_DIR + screens[0].name;
+		} else {
+			std::cerr << "No screen files found. Cannot start game.\n";
+			Sleep(100); // Give user time to read the message
+			return;
+		}
+	}
+
+	if (!initializeGameObjects(screenFile)) {
+		std::cerr << "Failed to initialize game objects from screen file: " << screenFile << "\n";
+		return;
+	}
+
 	hideCursor();
 	gameLoop();
 }
-
 
 bool GameManager::initializeGameObjects(const std::string& filename) {
 	std::ifstream inFile(filename);
@@ -55,7 +72,6 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 
 	return true;
 }
-
 
 void GameManager::gameLoop() {
 	while (isRunning) {

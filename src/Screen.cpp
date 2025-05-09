@@ -3,6 +3,7 @@
 #include <regex>
 #include <iostream>
 #include "Screen.h"
+#include "GameManager.h"
 
 namespace fs = std::filesystem;
 
@@ -12,11 +13,9 @@ Screen::Screen(const std::string& screenName)
 
 bool Screen::loadAllScreenFiles(std::vector<Screen>& screens) {
 	screens.clear();
-	// ChatGPT prompt - sort a directory and find all files matching a regex pattern
-    const std::string path = "../screens";
     const std::regex pattern(R"(.*\.screen)");
 
-    for (auto& entry : fs::directory_iterator(path)) {
+    for (auto& entry : fs::directory_iterator(SCREENS_DIR)) {
         if (entry.is_regular_file()) {
             std::string filename = entry.path().filename().string();
             if (std::regex_match(filename, pattern)) {

@@ -10,8 +10,11 @@ constexpr auto PLAYER_2_COLOR = 1;
 constexpr auto WALL_COLOR = 5;
 constexpr auto MINE_COLOR = 3;
 
+constexpr auto SCREENS_DIR = "../screens/";
+
 #include <vector>
 #include <Windows.h>
+#include <string>
 
 #include "GameObject.h"
 #include "MovingObject.h"
@@ -36,6 +39,7 @@ private:
     std::vector<Wall> walls;
     
     bool tankMovementCooldown;
+    std::string screenFile;
 
     bool initializeGameObjects(const std::string& filename);
     void gameLoop();
@@ -68,7 +72,7 @@ private:
     void drawGameInfo();
 
 public:
-    GameManager(bool coloredGame);
+    GameManager(bool coloredGame, const std::string& screenFile = "");
     void startGame();
     ~GameManager();
 };

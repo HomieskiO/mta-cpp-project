@@ -29,8 +29,7 @@ void MenuManager::openMenu() {
         switch (choice) {
         case START_GAME:
             clearScreen();
-            gameManager = new GameManager(coloredGame);
-                // add constructor for new GameManager(coloredGame, screenFile);
+            gameManager = new GameManager(coloredGame, selectedScreenFile);
             gameManager->startGame();
             delete gameManager;
             choice = 0;
