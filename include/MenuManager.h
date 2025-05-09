@@ -28,5 +28,6 @@ private:
     std::vector<std::string> getAvailableScreens();
     void displayScreens(const std::vector<std::string>& screens);
 	void displayChangeScreenMenu();
+    
 
 };

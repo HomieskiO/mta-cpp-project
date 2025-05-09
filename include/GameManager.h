@@ -73,6 +73,7 @@ private:
     void checkTanksWallsCollisions(std::vector<Tank*> player);
     void checkTankWallsCollisions(Tank* player);
     void drawGameInfo();
+	void ClearAllObjects();
 
 public:
     GameManager(bool coloredGame, const std::string& screenFile = "");

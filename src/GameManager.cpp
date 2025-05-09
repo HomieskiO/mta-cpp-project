@@ -22,7 +22,9 @@ GameManager::GameManager(bool coloredGame, const std::string& screenFile) {
 
 void GameManager::startGame() {
 	isRunning = true;
-	
+	clearScreen();
+	ClearAllObjects();
+
 	// If no screen file was chosen, get the first screen in lexicographic order
 	if (screenFile.empty()) {
 		std::vector<Screen> screens;
@@ -42,7 +44,25 @@ void GameManager::startGame() {
 	gameLoop();
 }
 
+void GameManager::ClearAllObjects() {
+	for (auto& tank : player1Tanks) {
+		delete tank;
+	}
+	for (auto& tank : player2Tanks) {
+		delete tank;
+	}
+	for (auto& shell : shells) {
+		delete shell;
+	}
+	player1Tanks.clear();
+	player2Tanks.clear();
+	shells.clear();
+	mines.clear();
+	walls.clear();
+}
+
 bool GameManager::initializeGameObjects(const std::string& filename) {
+	clearScreen();
 	std::ifstream inFile(filename);
 	if (!inFile) {
 		std::cerr << "Failed to open screen file: " << filename << "\n";
@@ -406,11 +426,11 @@ bool GameManager::isInBoard(GameObject* object) {
 	return object->getX() >= 0 && object->getX() < BOARD_WIDTH && object->getY() >= 0 && object->getY() < BOARD_HEIGHT;
 }
 
-void GameManager::drawGameInfo() {
+void GameManager::drawGameInfo() { //TODO: This will need to be changed to support screen rules
 	gotoxy(0, BOARD_HEIGHT);
 	
-	std::cout << "Player 1 \tActive Tank: " << player1ActiveTank << "\t Lives: " << player1Tanks.size() << "\t Score: " << player1Score << "\n";
-	std::cout << "Player 2 \tActive Tank: " << player2ActiveTank << "\t Lives: " << player2Tanks.size() << "\t Score: " << player2Score;
+	std::cout << "Player 1 \tActive Tank: " << player1ActiveTank << "\t Lives: " << player1Tanks.size() << "\t  Score: " << player1Score << "\n";
+	std::cout << "Player 2 \tActive Tank: " << player2ActiveTank << "\t Lives: " << player2Tanks.size() << "\t  Score: " << player2Score;
 }
 
 void GameManager::pauseGame() {
@@ -456,7 +476,6 @@ void GameManager::gameOver() {
 	// Load next screen if available
 	std::vector<Screen> screens;
 	if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {
-		// Find current screen index
 		size_t currentIndex = 0;
 		for (size_t i = 0; i < screens.size(); i++) {
 			if (SCREENS_DIR + screens[i].name == screenFile) {
@@ -468,6 +487,7 @@ void GameManager::gameOver() {
 		// Try to load next screen
 		if (currentIndex + 1 < screens.size()) {
 			screenFile = SCREENS_DIR + screens[currentIndex + 1].name;
+			clearScreen();
 			std::cout << "\t==========================================\n";
 			std::cout << "\t           LOADING NEXT LEVEL             \n";
 			std::cout << "\t==========================================\n";
@@ -480,6 +500,7 @@ void GameManager::gameOver() {
 	}
 
 	// Only show scores at the end of the game
+	clearScreen();
 	std::cout << "\n\t==========================================\n";
 	std::cout << "\t              FINAL RESULTS               \n";
 	std::cout << "\t==========================================\n";
