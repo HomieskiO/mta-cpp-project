@@ -10,8 +10,13 @@ constexpr auto PLAYER_2_COLOR = 1;
 constexpr auto WALL_COLOR = 5;
 constexpr auto MINE_COLOR = 3;
 
+constexpr auto SCREENS_DIR = "../screens/";
+
+constexpr auto SCREEN_WIN_SCORE = 100;
+
 #include <vector>
 #include <Windows.h>
+#include <string>
 
 #include "GameObject.h"
 #include "MovingObject.h"
@@ -30,15 +35,16 @@ private:
     int player1ActiveTank;
     std::vector<Tank*> player2Tanks;
     int player2ActiveTank;
+    int player1Score;
+    int player2Score;
 
     std::vector<Shell*> shells;
     std::vector<Mine> mines;
     std::vector<Wall> walls;
+    std::string screenFile;
     
     bool tankMovementCooldown;
-
-    void initializeGameObjects();
-    void generateTanks();
+    bool initializeGameObjects(const std::string& filename);
     void gameLoop();
     void pauseGame();
     void resumeGame();
@@ -51,8 +57,6 @@ private:
     void shoot(Tank* player);
     static bool isKeyPressed(int key);
     bool isInBoard(GameObject* object);
-    void generateMines();
-    void generateWalls();
     void moveTanks(std::vector<Tank*> player);
     void checkTankOnMine(Tank* player);
     void checkCollisions();
@@ -69,9 +73,10 @@ private:
     void checkTanksWallsCollisions(std::vector<Tank*> player);
     void checkTankWallsCollisions(Tank* player);
     void drawGameInfo();
+	void ClearAllObjects();
 
 public:
-    GameManager(bool coloredGame);
+    GameManager(bool coloredGame, const std::string& screenFile = "");
     void startGame();
     ~GameManager();
 };
