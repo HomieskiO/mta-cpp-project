@@ -38,7 +38,6 @@ void GameManager::startGame() {
 
 	if (!initializeGameObjects(screenFile)) {
 		std::cerr << "Failed to initialize game objects from screen file: " << screenFile << "\n";
-		return;
 	}
 
 	hideCursor();
@@ -105,18 +104,12 @@ bool GameManager::isValidCannonPosition(int x, int y) {
 
 
 void GameManager::validateTankCannon(Tank* tank) {
-	if (isValidCannonPosition(tank->getCannonX(), tank->getCannonY())) {
-		return;
-	}
-
-	for (int i = 0; i < 7; i++) {
-		tank->rotateCannon(45);
-
+	for (int i = 0; i < 8; i++) {
 		if (isValidCannonPosition(tank->getCannonX(), tank->getCannonY())) {
 			return;
 		}
+		tank->rotateCannon(45);
 	}
-
 	tank->removeCannon();
 }
 
@@ -495,11 +488,11 @@ bool GameManager::isInBoard(GameObject* object) {
 	return object->getX() >= 0 && object->getX() < BOARD_WIDTH && object->getY() >= 0 && object->getY() < BOARD_HEIGHT;
 }
 
-void GameManager::drawGameInfo() { //TODO: This will need to be changed to support screen rules
+void GameManager::drawGameInfo() { //TODO: This will need to be changed to support the size rules of excercise 2 and to be on L position
 	gotoxy(0, BOARD_HEIGHT);
 
-	std::cout << "P1 \tActive Tank: " << player1ActiveTank << "\t Lives: " << player1Tanks.size() << "\t  Score: " << player1Score << "\n";
-	std::cout << "P2 \tActive Tank: " << player2ActiveTank << "\t Lives: " << player2Tanks.size() << "\t  Score: " << player2Score;
+	std::cout << "P1 \tActive Tank: " << player1ActiveTank << "\tLives: " << player1Tanks.size() << "\tScore: " << player1Score << "\n";
+	std::cout << "P2 \tActive Tank: " << player2ActiveTank << "\tLives: " << player2Tanks.size() << "\tScore: " << player2Score;
 }
 
 void GameManager::pauseGame() {
