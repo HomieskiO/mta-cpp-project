@@ -500,11 +500,11 @@ void GameManager::gameOver() {
 		if (currentIndex + 1 < screens.size()) {
 			screenFile = SCREENS_DIR + screens[currentIndex + 1].name;
 			clearScreen();
-			//std::cout << "\t==========================================\n\n";
-			//std::cout << "\t\t"			<< message <<                "\n\n";
-			//std::cout << "\t==========================================\n\n";
-			//std::cout << "\tloading next screen " << screens[currentIndex + 1].name << "\n";
-			//std::cout << "\tPress any key to continue...\n";
+			std::cout << "\t==========================================\n\n";
+			std::cout << "\t\t"			<< message <<                "\n\n";
+			std::cout << "\t==========================================\n\n";
+			std::cout << "\tloading next screen " << screens[currentIndex + 1].name << "\n";
+			std::cout << "\tPress any key to continue...\n";
 			_getch();
 			startGame();
 			return;
