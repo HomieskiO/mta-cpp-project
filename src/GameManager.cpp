@@ -30,7 +30,8 @@ void GameManager::startGame() {
 		std::vector<Screen> screens;
 		if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {
 			screenFile = SCREENS_DIR + screens[0].name;
-		} else {
+		}
+		else {
 			std::cerr << "No screen files found. Cannot start game.\n";
 		}
 	}
@@ -70,6 +71,55 @@ void GameManager::ClearAllObjects() {
 	walls.clear();
 }
 
+bool GameManager::isValidCannonPosition(int x, int y) {
+	if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) {
+		return false;
+	}
+
+	for (const Wall& wall : walls) {
+		if (wall.getX() == x && wall.getY() == y) {
+			return false;
+		}
+	}
+
+	for (const Mine& mine : mines) {
+		if (mine.getX() == x && mine.getY() == y) {
+			return false;
+		}
+	}
+
+	for (const Tank* tank : player1Tanks) {
+		if (tank->getX() == x && tank->getY() == y) {
+			return false;
+		}
+	}
+
+	for (const Tank* tank : player2Tanks) {
+		if (tank->getX() == x && tank->getY() == y) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
+void GameManager::validateTankCannon(Tank* tank) {
+	if (isValidCannonPosition(tank->getCannonX(), tank->getCannonY())) {
+		return;
+	}
+
+	for (int i = 0; i < 7; i++) {
+		tank->rotateCannon(45);
+
+		if (isValidCannonPosition(tank->getCannonX(), tank->getCannonY())) {
+			return;
+		}
+	}
+
+	tank->removeCannon();
+}
+
 bool GameManager::initializeGameObjects(const std::string& filename) {
 	clearScreen();
 	std::ifstream inFile(filename);
@@ -97,6 +147,15 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 			}
 		}
 		y++;
+	}
+
+	// Validate cannons for all tanks
+	for (Tank* tank : player1Tanks) {
+		validateTankCannon(tank);
+	}
+
+	for (Tank* tank : player2Tanks) {
+		validateTankCannon(tank);
 	}
 
 	return true;
@@ -143,7 +202,7 @@ void GameManager::handlePlayerInput(std::vector<Tank*>& playerTanks, int& active
 	}
 
 	Tank* player = playerTanks[activeTankIndex];
-	
+
 	if (isKeyPressed(controls.shoot)) {
 		this->shoot(player);
 	}
@@ -257,7 +316,8 @@ void GameManager::removeDeadTanks(std::vector<Tank*>& playerTanks, int& activeTa
 				activeTankIndex = activeTankIndex % playerTanks.size();
 			}
 
-		} else{
+		}
+		else {
 			it++;
 		}
 		currentTankIndex++;
@@ -345,7 +405,7 @@ void GameManager::checkTankWallsCollisions(Tank* player) {
 	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
 		bool isTankHittingWall = player->collidesWith(*wallIt);
 		bool isCannonHittingWall = player->getCannon() && player->getCannon()->collidesWith(*wallIt);
-	
+
 		if (player->getMovementState() == MovementState::STAY && isCannonHittingWall) {
 			player->rotateCannon(-player->getLastRotation());
 		}
@@ -437,9 +497,9 @@ bool GameManager::isInBoard(GameObject* object) {
 
 void GameManager::drawGameInfo() { //TODO: This will need to be changed to support screen rules
 	gotoxy(0, BOARD_HEIGHT);
-	
-	std::cout << "Player 1 \tActive Tank: " << player1ActiveTank << "\t Lives: " << player1Tanks.size() << "\t  Score: " << player1Score << "\n";
-	std::cout << "Player 2 \tActive Tank: " << player2ActiveTank << "\t Lives: " << player2Tanks.size() << "\t  Score: " << player2Score;
+
+	std::cout << "P1 \tActive Tank: " << player1ActiveTank << "\t Lives: " << player1Tanks.size() << "\t  Score: " << player1Score << "\n";
+	std::cout << "P2 \tActive Tank: " << player2ActiveTank << "\t Lives: " << player2Tanks.size() << "\t  Score: " << player2Score;
 }
 
 void GameManager::pauseGame() {
@@ -476,11 +536,11 @@ void GameManager::gameOver() {
 		// Game tied, no points awarded
 		message = "Level tied!";
 	}
-	else if (!player1Tanks.size()) { 
+	else if (!player1Tanks.size()) {
 		player2Score += SCREEN_WIN_SCORE;
 		message = "Player 2 wins this level!";
 	}
-	else if (!player2Tanks.size()) { 
+	else if (!player2Tanks.size()) {
 		player1Score += SCREEN_WIN_SCORE;
 		message = "Player 1 wins this level!";
 	}
@@ -501,7 +561,7 @@ void GameManager::gameOver() {
 			screenFile = SCREENS_DIR + screens[currentIndex + 1].name;
 			clearScreen();
 			std::cout << "\t==========================================\n\n";
-			std::cout << "\t\t"			<< message <<                "\n\n";
+			std::cout << "\t\t" << message << "\n\n";
 			std::cout << "\t==========================================\n\n";
 			std::cout << "\tloading next screen " << screens[currentIndex + 1].name << "\n";
 			std::cout << "\tPress any key to continue...\n";
@@ -536,11 +596,6 @@ void GameManager::gameOver() {
 }
 
 GameManager::~GameManager() {
-	for (auto& tank : player1Tanks) {
-		delete tank;
-	}
-
-	for (auto& tank : player2Tanks) {
-		delete tank;
-	}
+	ClearAllObjects();
 }
+
