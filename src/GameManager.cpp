@@ -30,17 +30,26 @@ void GameManager::startGame() {
 		std::vector<Screen> screens;
 		if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {
 			screenFile = SCREENS_DIR + screens[0].name;
-		} else {
+		}
+		else {
 			std::cerr << "No screen files found. Cannot start game.\n";
 		}
 	}
 
 	if (!initializeGameObjects(screenFile)) {
 		std::cerr << "Failed to initialize game objects from screen file: " << screenFile << "\n";
-		return;
 	}
 
 	hideCursor();
+	if (player1Tanks.empty() || player2Tanks.empty()) {
+		drawGameObjects();
+		drawGameInfo();
+		// Wait a short time to let player see the initial board and end the round
+		Sleep(1000);
+		gameOver();
+		return;
+	}
+
 	gameLoop();
 }
 
@@ -59,6 +68,49 @@ void GameManager::ClearAllObjects() {
 	shells.clear();
 	mines.clear();
 	walls.clear();
+}
+
+bool GameManager::isValidCannonPosition(int x, int y) {
+	if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) {
+		return false;
+	}
+
+	for (const Wall& wall : walls) {
+		if (wall.getX() == x && wall.getY() == y) {
+			return false;
+		}
+	}
+
+	for (const Mine& mine : mines) {
+		if (mine.getX() == x && mine.getY() == y) {
+			return false;
+		}
+	}
+
+	for (const Tank* tank : player1Tanks) {
+		if (tank->getX() == x && tank->getY() == y) {
+			return false;
+		}
+	}
+
+	for (const Tank* tank : player2Tanks) {
+		if (tank->getX() == x && tank->getY() == y) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
+void GameManager::validateTankCannon(Tank* tank) {
+	for (int i = 0; i < 8; i++) {
+		if (isValidCannonPosition(tank->getCannonX(), tank->getCannonY())) {
+			return;
+		}
+		tank->rotateCannon(45);
+	}
+	tank->removeCannon();
 }
 
 bool GameManager::initializeGameObjects(const std::string& filename) {
@@ -88,6 +140,15 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 			}
 		}
 		y++;
+	}
+
+	// Validate cannons for all tanks
+	for (Tank* tank : player1Tanks) {
+		validateTankCannon(tank);
+	}
+
+	for (Tank* tank : player2Tanks) {
+		validateTankCannon(tank);
 	}
 
 	return true;
@@ -134,7 +195,7 @@ void GameManager::handlePlayerInput(std::vector<Tank*>& playerTanks, int& active
 	}
 
 	Tank* player = playerTanks[activeTankIndex];
-	
+
 	if (isKeyPressed(controls.shoot)) {
 		this->shoot(player);
 	}
@@ -248,7 +309,8 @@ void GameManager::removeDeadTanks(std::vector<Tank*>& playerTanks, int& activeTa
 				activeTankIndex = activeTankIndex % playerTanks.size();
 			}
 
-		} else{
+		}
+		else {
 			it++;
 		}
 		currentTankIndex++;
@@ -336,7 +398,7 @@ void GameManager::checkTankWallsCollisions(Tank* player) {
 	for (auto wallIt = walls.begin(); wallIt != walls.end(); ) {
 		bool isTankHittingWall = player->collidesWith(*wallIt);
 		bool isCannonHittingWall = player->getCannon() && player->getCannon()->collidesWith(*wallIt);
-	
+
 		if (player->getMovementState() == MovementState::STAY && isCannonHittingWall) {
 			player->rotateCannon(-player->getLastRotation());
 		}
@@ -426,11 +488,11 @@ bool GameManager::isInBoard(GameObject* object) {
 	return object->getX() >= 0 && object->getX() < BOARD_WIDTH && object->getY() >= 0 && object->getY() < BOARD_HEIGHT;
 }
 
-void GameManager::drawGameInfo() { //TODO: This will need to be changed to support screen rules
+void GameManager::drawGameInfo() { //TODO: This will need to be changed to support the size rules of excercise 2 and to be on L position
 	gotoxy(0, BOARD_HEIGHT);
-	
-	std::cout << "Player 1 \tActive Tank: " << player1ActiveTank << "\t Lives: " << player1Tanks.size() << "\t  Score: " << player1Score << "\n";
-	std::cout << "Player 2 \tActive Tank: " << player2ActiveTank << "\t Lives: " << player2Tanks.size() << "\t  Score: " << player2Score;
+
+	std::cout << "P1 \tActive Tank: " << player1ActiveTank << "\tLives: " << player1Tanks.size() << "\tScore: " << player1Score << "\n";
+	std::cout << "P2 \tActive Tank: " << player2ActiveTank << "\tLives: " << player2Tanks.size() << "\tScore: " << player2Score;
 }
 
 void GameManager::pauseGame() {
@@ -462,15 +524,18 @@ void GameManager::resumeGame() {
 void GameManager::gameOver() {
 	isRunning = false;
 	clearScreen();
-
+	std::string message = "Level Ended";
 	if (!player1Tanks.size() && !player2Tanks.size()) {
 		// Game tied, no points awarded
+		message = "Level tied!";
 	}
-	else if (!player1Tanks.size()) { 
+	else if (!player1Tanks.size()) {
 		player2Score += SCREEN_WIN_SCORE;
+		message = "Player 2 wins this level!";
 	}
-	else if (!player2Tanks.size()) { 
+	else if (!player2Tanks.size()) {
 		player1Score += SCREEN_WIN_SCORE;
+		message = "Player 1 wins this level!";
 	}
 
 	// Load next screen if available
@@ -488,10 +553,10 @@ void GameManager::gameOver() {
 		if (currentIndex + 1 < screens.size()) {
 			screenFile = SCREENS_DIR + screens[currentIndex + 1].name;
 			clearScreen();
-			std::cout << "\t==========================================\n";
-			std::cout << "\t           LOADING NEXT LEVEL             \n";
-			std::cout << "\t==========================================\n";
-			std::cout << "\t" << screens[currentIndex + 1].name << "\n\n";
+			std::cout << "\t==========================================\n\n";
+			std::cout << "\t\t" << message << "\n\n";
+			std::cout << "\t==========================================\n\n";
+			std::cout << "\tloading next screen " << screens[currentIndex + 1].name << "\n";
 			std::cout << "\tPress any key to continue...\n";
 			_getch();
 			startGame();
@@ -524,11 +589,6 @@ void GameManager::gameOver() {
 }
 
 GameManager::~GameManager() {
-	for (auto& tank : player1Tanks) {
-		delete tank;
-	}
-
-	for (auto& tank : player2Tanks) {
-		delete tank;
-	}
+	ClearAllObjects();
 }
+

@@ -42,7 +42,7 @@ private:
     std::vector<Mine> mines;
     std::vector<Wall> walls;
     std::string screenFile;
-    
+
     bool tankMovementCooldown;
     bool initializeGameObjects(const std::string& filename);
     void gameLoop();
@@ -63,7 +63,7 @@ private:
     void checkShellsCollisions();
     void checkTanksCollisions();
     void removeDeadTanks(std::vector<Tank*>& playerTanks, int& activeTankIndex);
-    void checkShellTanksCollisions(Shell* shell, std::vector<Tank*>& playerTanks, int& activeTankIndex,  bool& collided);
+    void checkShellTanksCollisions(Shell* shell, std::vector<Tank*>& playerTanks, int& activeTankIndex, bool& collided);
     void checkShellTankCollisions(Shell* shell, Tank* tank, bool& collided);
     void checkShellCannonsCollisions(Shell* shell, std::vector<Tank*>& playerTanks, bool& collided);
     void checkShellCannonCollisions(Shell* shell, Tank* tank, bool& collided);
@@ -73,7 +73,9 @@ private:
     void checkTanksWallsCollisions(std::vector<Tank*> player);
     void checkTankWallsCollisions(Tank* player);
     void drawGameInfo();
-	void ClearAllObjects();
+    void ClearAllObjects();
+    bool isValidCannonPosition(int x, int y);
+    void validateTankCannon(Tank* tank);
 
 public:
     GameManager(bool coloredGame, const std::string& screenFile = "");
