@@ -471,15 +471,18 @@ void GameManager::resumeGame() {
 void GameManager::gameOver() {
 	isRunning = false;
 	clearScreen();
-
+	std::string message = "Level Ended";
 	if (!player1Tanks.size() && !player2Tanks.size()) {
 		// Game tied, no points awarded
+		message = "Level tied!";
 	}
 	else if (!player1Tanks.size()) { 
 		player2Score += SCREEN_WIN_SCORE;
+		message = "Player 2 wins this level!";
 	}
 	else if (!player2Tanks.size()) { 
 		player1Score += SCREEN_WIN_SCORE;
+		message = "Player 1 wins this level!";
 	}
 
 	// Load next screen if available
@@ -497,11 +500,11 @@ void GameManager::gameOver() {
 		if (currentIndex + 1 < screens.size()) {
 			screenFile = SCREENS_DIR + screens[currentIndex + 1].name;
 			clearScreen();
-			std::cout << "\t==========================================\n";
-			std::cout << "\t           LOADING NEXT LEVEL             \n";
-			std::cout << "\t==========================================\n";
-			std::cout << "\t" << screens[currentIndex + 1].name << "\n\n";
-			std::cout << "\tPress any key to continue...\n";
+			//std::cout << "\t==========================================\n\n";
+			//std::cout << "\t\t"			<< message <<                "\n\n";
+			//std::cout << "\t==========================================\n\n";
+			//std::cout << "\tloading next screen " << screens[currentIndex + 1].name << "\n";
+			//std::cout << "\tPress any key to continue...\n";
 			_getch();
 			startGame();
 			return;
