@@ -41,6 +41,15 @@ void GameManager::startGame() {
 	}
 
 	hideCursor();
+	if (player1Tanks.empty() || player2Tanks.empty()) {
+		drawGameObjects();
+		drawGameInfo();
+		// Wait a short time to let player see the initial board and end the round
+		Sleep(1000);
+		gameOver();
+		return;
+	}
+
 	gameLoop();
 }
 
