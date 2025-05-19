@@ -16,8 +16,8 @@ GameManager::GameManager(bool coloredGame, const std::string& screenFile) {
 	shells = {};
 	player1Score = 0;
 	player2Score = 0;
-	legendX = 0;  // Initialize legend position
-	legendY = 0;  // Initialize legend position
+	legendX = 0; 
+	legendY = 0; 
 	tankMovementCooldown = false;
 }
 
@@ -172,8 +172,8 @@ void GameManager::gameLoop() {
 			}
 
 			updateGame();
-			drawGameObjects();
 			drawGameInfo();
+			drawGameObjects();
 			if (checkGameOver()) {
 				gameOver();
 			}
@@ -489,13 +489,6 @@ bool GameManager::isInBoard(GameObject* object) {
 }
 
 void GameManager::drawGameInfo() {
-	// Clear the legend area first
-	for (int i = 0; i < 3; i++) {
-		gotoxy(legendX, legendY + i);
-		std::cout << std::string(20, ' ');
-	}
-
-	// Draw the legend at the L position
 	gotoxy(legendX, legendY);
 	std::cout << "P1:" << player1ActiveTank << " L:" << player1Tanks.size();
 	gotoxy(legendX, legendY + 1);
