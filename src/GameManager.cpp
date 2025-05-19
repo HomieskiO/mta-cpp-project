@@ -16,7 +16,8 @@ GameManager::GameManager(bool coloredGame, const std::string& screenFile) {
 	shells = {};
 	player1Score = 0;
 	player2Score = 0;
-
+	legendX = 0; 
+	legendY = 0; 
 	tankMovementCooldown = false;
 }
 
@@ -44,8 +45,7 @@ void GameManager::startGame() {
 	if (player1Tanks.empty() || player2Tanks.empty()) {
 		drawGameObjects();
 		drawGameInfo();
-		// Wait a short time to let player see the initial board and end the round
-		Sleep(1000);
+		Sleep(1000); // Wait a short time to let player see the initial board and end the round
 		gameOver();
 		return;
 	}
@@ -136,7 +136,7 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 			case '@': mines.push_back(Mine(x, y, mineColor)); break;
 			case '1': player1Tanks.push_back(new Tank(x, y, P1_CONTROLS, player1Color)); break;
 			case '2': player2Tanks.push_back(new Tank(x, y, P2_CONTROLS, player2Color)); break;
-				//case 'L': Not sure yet what should I do with this
+			case 'L': legendX = x; legendY = y; break;
 			}
 		}
 		y++;
@@ -172,8 +172,8 @@ void GameManager::gameLoop() {
 			}
 
 			updateGame();
-			drawGameObjects();
 			drawGameInfo();
+			drawGameObjects();
 			if (checkGameOver()) {
 				gameOver();
 			}
@@ -488,11 +488,11 @@ bool GameManager::isInBoard(GameObject* object) {
 	return object->getX() >= 0 && object->getX() < BOARD_WIDTH && object->getY() >= 0 && object->getY() < BOARD_HEIGHT;
 }
 
-void GameManager::drawGameInfo() { //TODO: This will need to be changed to support the size rules of excercise 2 and to be on L position
-	gotoxy(0, BOARD_HEIGHT);
-
-	std::cout << "P1 \tActive Tank: " << player1ActiveTank << "\tLives: " << player1Tanks.size() << "\tScore: " << player1Score << "\n";
-	std::cout << "P2 \tActive Tank: " << player2ActiveTank << "\tLives: " << player2Tanks.size() << "\tScore: " << player2Score;
+void GameManager::drawGameInfo() {
+	gotoxy(legendX, legendY); 
+	std::cout << "P1 | Active:" << player1ActiveTank << " Score:" << player1Score;
+	gotoxy(legendX, legendY + 1);
+	std::cout << "P2 | Active:" << player2ActiveTank << " Score:" << player2Score;
 }
 
 void GameManager::pauseGame() {
