@@ -25,6 +25,7 @@ constexpr auto SCREEN_WIN_SCORE = 100;
 #include "Tank.h"
 #include "Mine.h"
 #include "Wall.h"
+#include "Screen.h"
 
 class GameManager {
 private:
@@ -44,6 +45,9 @@ private:
     std::string screenFile;
 
     bool tankMovementCooldown;
+    int legendX;
+    int legendY;
+
     bool initializeGameObjects(const std::string& filename);
     void gameLoop();
     void pauseGame();
