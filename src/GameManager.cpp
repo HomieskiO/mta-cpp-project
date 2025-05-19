@@ -489,15 +489,10 @@ bool GameManager::isInBoard(GameObject* object) {
 }
 
 void GameManager::drawGameInfo() {
-	gotoxy(legendX, legendY);
-	std::cout << "P1:" << player1ActiveTank << " L:" << player1Tanks.size();
+	gotoxy(legendX, legendY); 
+	std::cout << "P1 | Active:" << player1ActiveTank << " Score:" << player1Score;
 	gotoxy(legendX, legendY + 1);
-	std::cout << "S:" << player1Score;
-	
-	gotoxy(legendX + 10, legendY);
-	std::cout << "P2:" << player2ActiveTank << " L:" << player2Tanks.size();
-	gotoxy(legendX + 10, legendY + 1);
-	std::cout << "S:" << player2Score;
+	std::cout << "P2 | Active:" << player2ActiveTank << " Score:" << player2Score;
 }
 
 void GameManager::pauseGame() {
