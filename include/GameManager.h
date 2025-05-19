@@ -58,7 +58,6 @@ private:
     static bool isKeyPressed(int key);
     bool isInBoard(GameObject* object);
     void moveTanks(std::vector<Tank*> player);
-    void checkTankOnMine(Tank* player);
     void checkCollisions();
     void checkShellsCollisions();
     void checkTanksCollisions();

@@ -389,7 +389,15 @@ void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 
 void GameManager::checkTanksMinesCollisions(std::vector <Tank*>& playerTanks, int& activeTankIndex) {
 	for (auto& tank : playerTanks) {
-		checkTankOnMine(tank);
+		for (auto mineIt = mines.begin(); mineIt != mines.end();) {
+			if (tank->collidesWith(*mineIt)) {
+				tank->setState(false);
+				mineIt = mines.erase(mineIt);
+			}
+			else {
+				++mineIt;
+			}
+		}
 	}
 	removeDeadTanks(playerTanks, activeTankIndex);
 }
@@ -432,14 +440,6 @@ void GameManager::checkTanksCollisions() {
 void GameManager::checkCollisions() {
 	checkShellsCollisions();
 	checkTanksCollisions();
-}
-
-void GameManager::checkTankOnMine(Tank* tank) {
-	for (const Mine& mine : mines) {
-		if (tank->collidesWith(mine)) {
-			tank->setState(false);
-		}
-	}
 }
 
 void GameManager::updateCooldowns() {
