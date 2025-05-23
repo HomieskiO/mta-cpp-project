@@ -55,7 +55,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="screens\tanks-game_01.screen" />
-		<ClInclude Include="screens\tanks-game_01.screen" />
+		<ClInclude Include="screens\tanks-game_02.screen" />
 		<ClInclude Include="screens\tanks-game_03.screen" />
 	</ItemGroup>
 	<PropertyGroup Label="Globals">

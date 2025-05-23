@@ -523,6 +523,7 @@ void GameManager::resumeGame() {
 
 void GameManager::gameOver() {
 	isRunning = false;
+	isPaused = false;
 	clearScreen();
 	std::string message = "Level Ended";
 	if (!player1Tanks.size() && !player2Tanks.size()) {
