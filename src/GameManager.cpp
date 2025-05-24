@@ -201,6 +201,7 @@ void GameManager::handlePlayerInput(std::vector<Tank*>& playerTanks, int& active
 	}
 	if (isKeyPressed(controls.stay)) {
 		player->setMovementState(MovementState::STAY);
+		player->setRotation(0);
 		return;
 	}
 	if (isKeyPressed(controls.rightTrackForward) && isKeyPressed(controls.rightTrackBackward)) {
@@ -216,32 +217,46 @@ void GameManager::handlePlayerInput(std::vector<Tank*>& playerTanks, int& active
 		player->setMovementState(MovementState::BACKWARD);
 	}
 	if (isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.leftTrackBackward)) {
-		player->rotateCannon(-45);
+		player->setRotation(-45);
 	}
 	if (isKeyPressed(controls.rightTrackBackward) && !isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.leftTrackBackward)) {
-		player->rotateCannon(45);
+		player->setRotation(45);
 	}
 	if (isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.rightTrackBackward)) {
-		player->rotateCannon(45);
+		player->setRotation(45);
 	}
 	if (isKeyPressed(controls.leftTrackBackward) && !isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.rightTrackBackward)) {
-		player->rotateCannon(-45);
+		player->setRotation(-45);
 	}
 	if (isKeyPressed(controls.leftTrackForward) && isKeyPressed(controls.rightTrackBackward)) {
-		player->rotateCannon(90);
+		player->setRotation(90);
 	}
 	if (isKeyPressed(controls.leftTrackBackward) && isKeyPressed(controls.rightTrackForward)) {
-		player->rotateCannon(-90);
+		player->setRotation(-90);
 	}
 }
 
 void GameManager::shoot(Tank* player) {
 	if (player->canShoot()) {
 		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection(), player->getColor()));
-
+		
 		// spawn shell one step further to prevent ruining your own cannon while moving
 		shells.back()->move();
+		checkShellsCollisions();
 		player->setCooldown(SHOOT_COOLDOWN + 1);
+	}
+}
+
+void GameManager::rotateTanksCannons(std::vector<Tank*> player) {
+	for (auto& tank : player) {
+		if (std::abs(tank->getRotation()) == 90) {
+			tank->rotateCannon(tank->getRotation() / 2);
+			checkTanksWallsCollisions(player);
+			tank->rotateCannon(tank->getRotation() / 2);
+		}
+		else {
+			tank->rotateCannon();
+		}
 	}
 }
 
@@ -253,6 +268,8 @@ void GameManager::moveTanks(std::vector<Tank*> player) {
 
 void GameManager::updateGame() {
 	if (!tankMovementCooldown) {
+		rotateTanksCannons(player1Tanks);
+		rotateTanksCannons(player2Tanks);
 		moveTanks(player1Tanks);
 		moveTanks(player2Tanks);
 	}
@@ -419,6 +436,7 @@ void GameManager::checkTankWallsCollisions(Tank* player) {
 				player->rotateCannon(-player->getLastRotation());
 			}
 			player->setMovementState(MovementState::STAY);
+			player->setRotation(0);
 		}
 		++wallIt;
 	}

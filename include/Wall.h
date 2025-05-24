@@ -11,6 +11,10 @@ public:
     Wall(int x, int y);
     Wall(int x, int y, int color);
     void hit();
+
+    Wall(const Wall&) = default;
+    Wall& operator=(const Wall&) = default;
+    ~Wall() = default;
 };
 
 

@@ -16,6 +16,9 @@ class MenuManager {
 public:
     MenuManager();          
     void openMenu();
+    MenuManager(const MenuManager&) = delete;
+    MenuManager& operator=(const MenuManager&) = delete;
+    ~MenuManager() = default;
 
 private:
     GameManager* gameManager;
@@ -28,6 +31,4 @@ private:
     std::vector<std::string> getAvailableScreens();
     void displayScreens(const std::vector<std::string>& screens);
 	void displayChangeScreenMenu();
-    
-
 };

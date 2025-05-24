@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr auto FRAME_RATE_MS = 300;
+constexpr auto FRAME_RATE_MS = 150;
 constexpr auto ESCAPE = 27;
 constexpr auto BOARD_HEIGHT = 24;
 constexpr auto BOARD_WIDTH = 80;
@@ -61,6 +61,7 @@ private:
     void shoot(Tank* player);
     static bool isKeyPressed(int key);
     bool isInBoard(GameObject* object);
+    void rotateTanksCannons(std::vector<Tank*> player);
     void moveTanks(std::vector<Tank*> player);
     void checkCollisions();
     void checkShellsCollisions();
@@ -83,5 +84,7 @@ private:
 public:
     GameManager(bool coloredGame, const std::string& screenFile = "");
     void startGame();
+    GameManager(const GameManager&) = default;
+    GameManager& operator=(const GameManager&) = default;
     ~GameManager();
 };

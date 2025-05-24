@@ -11,6 +11,7 @@ Tank::Tank(int x, int y, PlayerControls controls) : MovingObject(TANK_SYMBOL, x,
     this->cannon = new Cannon(x, y, direction);
 	this->shell = nullptr;
 	this->cooldown = 0;
+	this->rotation = 0;
 	this->lastRotation = 0;
 }
 
@@ -19,6 +20,7 @@ Tank::Tank(int x, int y, PlayerControls controls, int color) : MovingObject(TANK
 	this->cannon = new Cannon(x, y, direction, color);
 	this->shell = nullptr;
 	this->cooldown = 0;
+	this->rotation = 0;
 	this->lastRotation = 0;
 }
 
@@ -30,8 +32,19 @@ void Tank::setControls(PlayerControls controls) {
 	this->controls = controls;
 }
 
+void Tank::setRotation(int rotation) {
+	this->rotation = rotation;
+}
+int Tank::getRotation() const {
+	return rotation;
+}
+
 int Tank::getLastRotation() const {
 	return lastRotation;
+}
+
+void Tank::rotateCannon() {
+	Tank::rotateCannon(rotation);
 }
 
 void Tank::rotateCannon(int angle) { 
