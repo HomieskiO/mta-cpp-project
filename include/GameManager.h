@@ -61,6 +61,7 @@ private:
     void shoot(Tank* player);
     static bool isKeyPressed(int key);
     bool isInBoard(GameObject* object);
+    void rotateTanksCannons(std::vector<Tank*> player);
     void moveTanks(std::vector<Tank*> player);
     void checkCollisions();
     void checkShellsCollisions();
