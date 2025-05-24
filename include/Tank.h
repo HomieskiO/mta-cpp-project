@@ -52,5 +52,7 @@ public:
     void removeCannon();
     int getColor();
     void alignCannon();
+    Tank(const Tank&) = default;
+    Tank& operator=(const Tank&) = default;
     ~Tank();
 };

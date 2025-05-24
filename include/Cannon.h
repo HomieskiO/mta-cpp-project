@@ -14,5 +14,8 @@ public:
 	Cannon(int tankX, int tankY, Direction tankDirection, int color);
 	void rotateCannon(Direction direction);
 	void alignWithTank(int tankX, int tankY);
+
+	Cannon(const Cannon&) = default;
+	Cannon& operator=(const Cannon&) = default;
 	~Cannon();
 };

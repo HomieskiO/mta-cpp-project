@@ -10,4 +10,8 @@ class Shell : public MovingObject {
 public:
     Shell(int x, int y, Direction tankDirection);
     Shell(int x, int y, Direction tankDirection, int color);
+
+    Shell(const Shell&) = default;
+    Shell& operator=(const Shell&) = default;
+    ~Shell() = default;
 };

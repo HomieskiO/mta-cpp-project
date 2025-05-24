@@ -238,9 +238,10 @@ void GameManager::handlePlayerInput(std::vector<Tank*>& playerTanks, int& active
 void GameManager::shoot(Tank* player) {
 	if (player->canShoot()) {
 		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection(), player->getColor()));
-
+		
 		// spawn shell one step further to prevent ruining your own cannon while moving
 		shells.back()->move();
+		checkShellsCollisions();
 		player->setCooldown(SHOOT_COOLDOWN + 1);
 	}
 }
