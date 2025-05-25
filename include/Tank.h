@@ -33,13 +33,17 @@ private:
     Cannon* cannon;
     Shell* shell;
     int cooldown;
+    int rotation;
     int lastRotation;
 public:
 	Tank(int x, int y, PlayerControls controls);
     Tank(int x, int y, PlayerControls controls, int color);
     PlayerControls getControls() const;
 	void setControls(PlayerControls controls);
+    void setRotation(int rotation);
+    int getRotation() const;
     int getLastRotation() const;
+    void rotateCannon();
     void rotateCannon(int angle);
     void move();
     bool canShoot();
@@ -52,5 +56,7 @@ public:
     void removeCannon();
     int getColor();
     void alignCannon();
+    Tank(const Tank&) = default;
+    Tank& operator=(const Tank&) = default;
     ~Tank();
 };
