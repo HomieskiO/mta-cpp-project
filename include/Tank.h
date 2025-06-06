@@ -35,6 +35,9 @@ private:
     int cooldown;
     int rotation;
     int lastRotation;
+protected:
+    virtual bool canRotateCannon() const;
+    virtual void handleCollision(const GameObject& other);
 public:
 	Tank(int x, int y, PlayerControls controls);
     Tank(int x, int y, PlayerControls controls, int color);
@@ -43,10 +46,12 @@ public:
     void setRotation(int rotation);
     int getRotation() const;
     int getLastRotation() const;
-    void rotateCannon();
-    void rotateCannon(int angle);
-    void move();
-    bool canShoot();
+    virtual void rotateCannon();
+    virtual void rotateCannon(int angle);
+    virtual void move() override;
+    virtual bool canMove() const override;
+    virtual void updatePosition() override;
+    virtual bool canShoot();
 	void draw() const override;
 	int getCannonX() const;
 	int getCannonY() const;
@@ -58,5 +63,8 @@ public:
     void alignCannon();
     Tank(const Tank&) = default;
     Tank& operator=(const Tank&) = default;
-    ~Tank();
+    virtual ~Tank();
+    virtual void makeMove(const std::vector<Shell*>& shells,
+                         const std::vector<Tank*>& tanks,
+                         const std::vector<Wall>& walls) = 0;
 };
