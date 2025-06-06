@@ -190,7 +190,14 @@ void GameManager::gameLoop() {
 }
 
 void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex) {
-	tanks[activeTankIndex]->makeMove(shells, tanks, walls);
+	Tank* tank = tanks[activeTankIndex];
+	if (tank->getControls().shoot && isKeyPressed(tank->getControls().shoot)) {
+		if (tank->canShoot()) {
+			shoot(tank);
+		}
+	}
+	tank->makeMove(shells, tanks, walls);
+
 }
 
 void GameManager::shoot(Tank* player) {
@@ -198,7 +205,7 @@ void GameManager::shoot(Tank* player) {
 		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection(), player->getColor()));
 		// spawn shell one step further to prevent ruining your own cannon while moving
 		shells.back()->move();
-		checkShellsCollisions();
+		this->checkShellsCollisions();
 		player->setCooldown(SHOOT_COOLDOWN + 1);
 	}
 }

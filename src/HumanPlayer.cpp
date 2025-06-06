@@ -8,12 +8,9 @@ HumanPlayer::HumanPlayer(int x, int y, const PlayerControls& controls, int color
 void HumanPlayer::makeMove(const std::vector<Shell*>& shells,
                           const std::vector<Tank*>& tanks,
                           const std::vector<Wall>& walls) {
-    if (isKeyPressed(getControls().shoot)) {
-        if (canShoot()) {
-            shoot(this);
-        }
-        return;
-    }
+    //if (isKeyPressed(getControls().shoot)) {
+    //    return;
+    //}
     if (isKeyPressed(getControls().stay)) {
         setMovementState(MovementState::STAY);
         setRotation(0);
