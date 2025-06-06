@@ -127,7 +127,7 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 	std::string line;
 	int y = 0;
 	while (std::getline(inFile, line) && y < BOARD_HEIGHT) {
-		for (int x = 0; x < line.size() && x < BOARD_WIDTH; ++x) {
+		for (size_t x = 0; x < line.size() && x < BOARD_WIDTH; ++x) {
 			char ch = line[x];
 			switch (ch) {
 			case '#': walls.push_back(Wall(x, y, wallColor)); break;

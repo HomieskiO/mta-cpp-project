@@ -3,6 +3,7 @@
 #include "MovingObject.h"
 #include "Cannon.h"
 #include "Shell.h"
+#include "Wall.h"
 #include <string>
 
 constexpr auto TANK_SYMBOL = 'O';

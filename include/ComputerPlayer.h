@@ -21,12 +21,12 @@ public:
     void rotateCannon(int angle) override;
 
     void makeMove(const std::vector<Shell*>& shells,
-                 const std::vector<Tank*>& opponentTanks,
+                 const std::vector<Tank*>& tanks,
                  const std::vector<Wall>& walls) override;
 
 private:
     bool shouldMoveTank(const std::vector<Shell*>& shells);
-    bool shouldShoot(const std::vector<Tank*>& opponentTanks);
+    bool shouldShoot(const std::vector<Tank*>& tanks);
     bool isOpponentInRange(const std::vector<Tank*>& opponentTanks);
     void moveTankFromShell(const std::vector<Shell*>& shells);
     void aimAtTank(const std::vector<Tank*>& opponentTanks);

@@ -28,11 +28,6 @@ constexpr auto SCREEN_WIN_SCORE = 100;
 #include "Screen.h"
 #include "ComputerPlayer.h"
 
-enum class PlayerType {
-    HUMAN,
-    COMPUTER
-};
-
 class GameManager {
 private:
     bool coloredGame;
@@ -75,7 +70,8 @@ private:
             }
         }
     }
-
+    static void shoot(Tank* player);
+    static bool isKeyPressed(int key);
     void handleCollision(Shell* shell, Tank* tank);
     void handleCollision(Shell* shell, Wall* wall);
     void handleCollision(Tank* tank, Mine* mine);
@@ -99,8 +95,6 @@ private:
     void gameOver();
     void handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex);
     void handleComputerInput(std::vector<Tank*>& tanks, int& activeTankIndex);
-    static void shoot(Tank* player);
-    static bool isKeyPressed(int key);
     bool isInBoard(GameObject* object);
     void drawGameObjects();
     void drawGameInfo();
@@ -110,8 +104,10 @@ private:
     bool isValidCannonPosition(int x, int y);
     void validateTankCannon(Tank* tank);
     void validateAllTanks();
-    void handlePlayerInput(PlayerType type, std::vector<Tank*>& tanks, int& activeTankIndex);
     void updateGame();
+    void rotateTanksCannon(std::vector<Tank*> player);
+	void gameLoop();
+	void moveTanks(std::vector<Tank*> player);
 
 public:
     GameManager(bool coloredGame, const std::string& screenFile = "", PlayerType player1Type = PlayerType::HUMAN, PlayerType player2Type = PlayerType::HUMAN);
