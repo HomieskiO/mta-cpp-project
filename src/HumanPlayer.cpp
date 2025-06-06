@@ -1,5 +1,5 @@
 #include "HumanPlayer.h"
-#include "GameManager.h"
+#include "ioUtils.h"
 #include "Shell.h"
 
 HumanPlayer::HumanPlayer(int x, int y, const PlayerControls& controls, int color)
@@ -10,8 +10,7 @@ void HumanPlayer::makeMove(const std::vector<Shell*>& shells,
                           const std::vector<Wall>& walls) {
     if (isKeyPressed(getControls().shoot)) {
         if (canShoot()) {
-            // Let GameManager handle shell creation
-            GameManager::shoot(this);
+            shoot(this);
         }
         return;
     }

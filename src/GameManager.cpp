@@ -189,11 +189,6 @@ void GameManager::gameLoop() {
 	}
 }
 
-// GPT prompt - give me a function that gets keyboard inputs async
-bool GameManager::isKeyPressed(int keyCode) {
-	return GetAsyncKeyState(keyCode) & 0x8000;
-}
-
 void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex) {
 	tanks[activeTankIndex]->makeMove(shells, tanks, walls);
 }
@@ -275,7 +270,7 @@ void GameManager::removeDeadTanks(std::vector<Tank*>& playerTanks, int& activeTa
 	int currentTankIndex = 0;
 	for (auto it = playerTanks.begin(); it != playerTanks.end();) {
 		Tank* tank = *it;
-		if (!tank->getState()) {
+		if (!tank->isAlive()) {
 			delete tank;
 			it = playerTanks.erase(it);
 			if (currentTankIndex < activeTankIndex) {

@@ -14,3 +14,4 @@
 void gotoxy(int x, int y);
 void hideCursor();
 void clearScreen();
+static bool isKeyPressed(int key);

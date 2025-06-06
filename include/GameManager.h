@@ -71,11 +71,10 @@ private:
         }
     }
     static void shoot(Tank* player);
-    static bool isKeyPressed(int key);
-    void handleCollision(Shell* shell, Tank* tank);
-    void handleCollision(Shell* shell, Wall* wall);
-    void handleCollision(Tank* tank, Mine* mine);
-    void handleCollision(Tank* tank, Wall* wall);
+    //void handleCollision(Shell* shell, Tank* tank);
+    //void handleCollision(Shell* shell, Wall* wall);
+    //void handleCollision(Tank* tank, Mine* mine);
+    //void handleCollision(Tank* tank, Wall* wall);
     void ClearAllObjects();
     void checkCollisions();
     void checkShellsCollisions();
@@ -94,7 +93,7 @@ private:
     bool checkGameOver();
     void gameOver();
     void handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex);
-    void handleComputerInput(std::vector<Tank*>& tanks, int& activeTankIndex);
+    //void handleComputerInput(std::vector<Tank*>& tanks, int& activeTankIndex);
     bool isInBoard(GameObject* object);
     void drawGameObjects();
     void drawGameInfo();
@@ -105,7 +104,7 @@ private:
     void validateTankCannon(Tank* tank);
     void validateAllTanks();
     void updateGame();
-    void rotateTanksCannon(std::vector<Tank*> player);
+    void rotateTanksCannons(std::vector<Tank*> player);
 	void gameLoop();
 	void moveTanks(std::vector<Tank*> player);
 
