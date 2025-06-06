@@ -1,3 +1,8 @@
+#include "GameObject.h"
+#include "MovingObject.h"
+#include "Tank.h"
+#include "HumanPlayer.h"
+#include "ComputerPlayer.h"
 #include "GameManager.h"
 #include <iostream>
 #include <fstream> 
@@ -270,7 +275,7 @@ void GameManager::removeDeadTanks(std::vector<Tank*>& playerTanks, int& activeTa
 	int currentTankIndex = 0;
 	for (auto it = playerTanks.begin(); it != playerTanks.end();) {
 		Tank* tank = *it;
-		if (!tank->isAlive()) {
+		if (!tank->getState()) {
 			delete tank;
 			it = playerTanks.erase(it);
 			if (currentTankIndex < activeTankIndex) {

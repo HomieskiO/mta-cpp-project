@@ -1,6 +1,7 @@
 #pragma once
 #include "Tank.h"
 #include "Wall.h"
+#include <vector>
 
 class HumanPlayer : public Tank {
     friend class GameManager; 

@@ -5,6 +5,7 @@
 #include "Shell.h"
 #include "Wall.h"
 #include <string>
+#include <vector>
 
 constexpr auto TANK_SYMBOL = 'O';
 constexpr auto SHOOT_COOLDOWN = 5;
