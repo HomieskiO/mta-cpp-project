@@ -191,11 +191,8 @@ void GameManager::gameLoop() {
 
 void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex) {
 	Tank* tank = tanks[activeTankIndex];
-	PlayerControls controls = tank->getControls();
-	if (controls.shoot && isKeyPressed(controls.shoot)) {
-		if (tank->canShoot()) {
-			shoot(tank);
-		}
+	if (tank->shouldShoot(tanks)) {
+		shoot(tank);
 	}
 	tank->makeMove(shells, tanks, walls);
 

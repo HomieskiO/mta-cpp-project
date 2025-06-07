@@ -64,4 +64,5 @@ public:
     virtual void makeMove(const std::vector<Shell*>& shells,
                          const std::vector<Tank*>& tanks,
                          const std::vector<Wall>& walls) = 0;
+    virtual bool shouldShoot(const std::vector<Tank*>& opponentTanks) = 0;
 };

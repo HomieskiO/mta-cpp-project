@@ -5,12 +5,16 @@
 HumanPlayer::HumanPlayer(int x, int y, const PlayerControls& controls, int color)
     : Tank(x, y, controls, color) {}
 
+bool HumanPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
+    return isKeyPressed(getControls().shoot);
+}
+
 void HumanPlayer::makeMove(const std::vector<Shell*>& shells,
                           const std::vector<Tank*>& tanks,
                           const std::vector<Wall>& walls) {
-    //if (isKeyPressed(getControls().shoot)) {
-    //    return;
-    //}
+    if (shouldShoot)) {
+        return;
+    }
     if (isKeyPressed(getControls().stay)) {
         setMovementState(MovementState::STAY);
         setRotation(0);
