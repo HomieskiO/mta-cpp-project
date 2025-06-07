@@ -70,7 +70,7 @@ private:
             }
         }
     }
-    static void shoot(Tank* player);
+    void shoot(Tank* player);
     void ClearAllObjects();
     void checkCollisions();
     void checkShellsCollisions();

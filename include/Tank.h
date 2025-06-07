@@ -37,9 +37,6 @@ private:
     int cooldown;
     int rotation;
     int lastRotation;
-protected:
-    virtual bool canRotateCannon() const;
-    virtual void handleCollision(const GameObject& other);
 public:
 	Tank(int x, int y, PlayerControls controls);
     Tank(int x, int y, PlayerControls controls, int color);
@@ -51,8 +48,6 @@ public:
     virtual void rotateCannon();
     virtual void rotateCannon(int angle);
     virtual void move() override;
-    virtual bool canMove() const override;
-    virtual void updatePosition() override;
     virtual bool canShoot();
 	void draw() const override;
 	int getCannonX() const;

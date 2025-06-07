@@ -16,10 +16,7 @@ class ComputerPlayer : public Tank {
 public:
     ComputerPlayer(int x, int y, int color);
 
-    void move() override;
-    void rotateCannon() override;
-    void rotateCannon(int angle) override;
-
+	void move() override;
     void makeMove(const std::vector<Shell*>& shells,
                  const std::vector<Tank*>& tanks,
                  const std::vector<Wall>& walls) override;

@@ -27,26 +27,9 @@ void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
 }
 
 void ComputerPlayer::move() {
-    if (!canMove()) {
-        return;
-    }
     if (shouldMoveTank(std::vector<Shell*>())) {
         Tank::move();
     }
-}
-
-void ComputerPlayer::rotateCannon() {
-    if (!canRotateCannon()) {
-        return;
-    }
-    Tank::rotateCannon();
-}
-
-void ComputerPlayer::rotateCannon(int angle) {
-    if (!canRotateCannon()) {
-        return;
-    }
-    Tank::rotateCannon(angle);
 }
 
 bool ComputerPlayer::shouldMoveTank(const std::vector<Shell*>& shells) {
