@@ -20,6 +20,11 @@ struct PlayerControls {
     int switchActiveTank;
 };
 
+enum class PlayerType {
+    HUMAN,
+    COMPUTER
+};
+
 constexpr PlayerControls P1_CONTROLS = {
     'Q', 'A', 'E', 'D', 'S', 'W', 'Z'
 };
