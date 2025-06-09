@@ -9,7 +9,7 @@ enum class PlayerType {
     COMPUTER
 };
 
-constexpr int DANGER_DISTANCE = 10;    // Distance at which we consider a shell dangerous
+constexpr int DANGER_DISTANCE = 20;    // Distance at which we consider a shell dangerous
 constexpr int SHOOTING_RANGE = 10;     // Maximum distance to consider shooting
 
 class ComputerPlayer : public Tank {

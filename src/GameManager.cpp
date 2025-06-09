@@ -137,7 +137,7 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 			switch (ch) {
 			case '#': walls.push_back(Wall(x, y, wallColor)); break;
 			case '@': mines.push_back(Mine(x, y, mineColor)); break;
-			case '1': 
+			case '1':
 				if (player1Type == PlayerType::COMPUTER) {
 					player1Tanks.push_back(new ComputerPlayer(x, y, player1Color));
 				} else {
@@ -174,8 +174,8 @@ void GameManager::gameLoop() {
 		}
 		if (!isPaused) {
 			if (!tankMovementCooldown) {
-				handlePlayerInput(player1Tanks, player1ActiveTank);
-				handlePlayerInput(player2Tanks, player2ActiveTank);
+				handlePlayerInput(player1Tanks, player1ActiveTank, player2Tanks);
+				handlePlayerInput(player2Tanks, player2ActiveTank, player1Tanks);
 			}
 
 			updateGame();
@@ -189,27 +189,12 @@ void GameManager::gameLoop() {
 	}
 }
 
-std::vector<Tank*> GameManager::getOpponentTanks(const std::vector<Tank*>& allTanks, Tank* currentTank) {
-	std::vector<Tank*> opponentTanks;
-	PlayerControls tankControls = currentTank->getControls();
-
-	for (const auto& otherTank : allTanks) {
-		if (otherTank->getControls().leftTrackForward != tankControls.leftTrackForward) {
-			opponentTanks.push_back(otherTank);
-		}
-	}
-
-	return opponentTanks;
-}
-
-void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex) {
+void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex, std::vector<Tank*>& opponentTanks) {
 	Tank* tank = tanks[activeTankIndex];
-	if (tank->shouldShoot(tanks)) {
+	tank->makeMove(shells, opponentTanks, walls);
+	if (tank->shouldShoot(opponentTanks)) {
 		shoot(tank);
 	}
-
-	std::vector<Tank*> opponentTanks = getOpponentTanks(tanks, tank);
-	tank->makeMove(shells, opponentTanks, walls);
 }
 
 void GameManager::shoot(Tank* player) {

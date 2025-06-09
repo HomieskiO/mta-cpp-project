@@ -49,6 +49,7 @@ private:
     int legendY;
     bool tankMovementCooldown;
 
+	//chatGPT prompt to create templates for collision checking
     template<typename T1, typename T2>
     void checkCollisions(std::vector<T1*>& objects1, std::vector<T2*>& objects2) {
         for (auto& obj1 : objects1) {
@@ -88,7 +89,7 @@ private:
     void updateCooldowns();
     bool checkGameOver();
     void gameOver();
-    void handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex);
+    void handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex, std::vector<Tank*>& opponentTanks);
     bool isInBoard(GameObject* object);
     void drawGameObjects();
     void drawGameInfo();
@@ -102,7 +103,6 @@ private:
     void rotateTanksCannons(std::vector<Tank*> player);
 	void gameLoop();
 	void moveTanks(std::vector<Tank*> player);
-	std::vector<Tank*> getOpponentTanks(const std::vector<Tank*>& allTanks, Tank* currentTank);
 
 
 public:
