@@ -102,6 +102,8 @@ private:
     void rotateTanksCannons(std::vector<Tank*> player);
 	void gameLoop();
 	void moveTanks(std::vector<Tank*> player);
+	std::vector<Tank*> getOpponentTanks(const std::vector<Tank*>& allTanks, Tank* currentTank);
+
 
 public:
     GameManager(bool coloredGame, const std::string& screenFile = "", PlayerType player1Type = PlayerType::HUMAN, PlayerType player2Type = PlayerType::HUMAN);

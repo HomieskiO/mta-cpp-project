@@ -9,14 +9,12 @@ enum class PlayerType {
     COMPUTER
 };
 
-constexpr int DANGER_DISTANCE = 20;    // Distance at which we consider a shell dangerous
-constexpr int SHOOTING_RANGE = 20;     // Maximum distance to consider shooting
+constexpr int DANGER_DISTANCE = 10;    // Distance at which we consider a shell dangerous
+constexpr int SHOOTING_RANGE = 10;     // Maximum distance to consider shooting
 
 class ComputerPlayer : public Tank {
 public:
     ComputerPlayer(int x, int y, int color);
-
-	void move() override;
     void makeMove(const std::vector<Shell*>& shells,
                  const std::vector<Tank*>& tanks,
                  const std::vector<Wall>& walls) override;

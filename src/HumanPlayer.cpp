@@ -12,7 +12,7 @@ bool HumanPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
 void HumanPlayer::makeMove(const std::vector<Shell*>& shells,
                           const std::vector<Tank*>& tanks,
                           const std::vector<Wall>& walls) {
-    if (shouldShoot)) {
+    if (shouldShoot(tanks)) {
         return;
     }
     if (isKeyPressed(getControls().stay)) {

@@ -1,6 +1,7 @@
 #include "ComputerPlayer.h"
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 ComputerPlayer::ComputerPlayer(int x, int y, int color) 
     : Tank(x, y, P2_CONTROLS, color) {}
@@ -14,22 +15,39 @@ ComputerPlayer::PointDistance ComputerPlayer::calculateDistance(int x1, int y1, 
 }
 
 void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
-                            const std::vector<Tank*>& opponentTanks,
-                            const std::vector<Wall>& walls) {
+    const std::vector<Tank*>& opponentTanks,
+    const std::vector<Wall>& walls) {
     if (shouldMoveTank(shells)) {
         moveTankFromShell(shells);
-        return;
     }
-    
+
     if (shouldShoot(opponentTanks)) {
         aimAtTank(opponentTanks);
     }
-}
 
-void ComputerPlayer::move() {
-    if (shouldMoveTank(std::vector<Shell*>())) {
-        Tank::move();
+
+    Tank* nearestOpponent = nullptr;
+    int minDistance = INT_MAX;
+    for (const auto& opponent : opponentTanks) {
+        PointDistance dist = calculateDistance(getX(), getY(), opponent->getX(), opponent->getY());
+        if (dist.distance < minDistance) {
+            minDistance = dist.distance;
+            nearestOpponent = opponent;
+        }
     }
+
+    if (nearestOpponent && minDistance > SHOOTING_RANGE) {
+        // Move towards opponent
+       PointDistance dist = calculateDistance(getX(), getY(), nearestOpponent->getX(), nearestOpponent->getY());
+       if (dist.xDistance > dist.yDistance) {
+          setDirection(dist.xDistance > 0 ? Direction::RIGHT : Direction::LEFT);
+       }
+       else {
+          setDirection(dist.yDistance > 0 ? Direction::DOWN : Direction::UP);
+       }
+       Tank::move();
+        }
+
 }
 
 bool ComputerPlayer::shouldMoveTank(const std::vector<Shell*>& shells) {
@@ -74,8 +92,7 @@ Shell* ComputerPlayer::isCloseToShell(const std::vector<Shell*>& shells) {
 bool ComputerPlayer::isOpponentInRange(const std::vector<Tank*>& opponentTanks) {
     for (const auto& opponent : opponentTanks) {
         PointDistance dist = calculateDistance(getX(), getY(), opponent->getX(), opponent->getY());
-        
-        if (dist.xDistance <= SHOOTING_RANGE && dist.yDistance <= SHOOTING_RANGE) {
+        if (dist.distance <= SHOOTING_RANGE) {
             return true;
         }
     }

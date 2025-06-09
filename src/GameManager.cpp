@@ -189,13 +189,27 @@ void GameManager::gameLoop() {
 	}
 }
 
+std::vector<Tank*> GameManager::getOpponentTanks(const std::vector<Tank*>& allTanks, Tank* currentTank) {
+	std::vector<Tank*> opponentTanks;
+	PlayerControls tankControls = currentTank->getControls();
+
+	for (const auto& otherTank : allTanks) {
+		if (otherTank->getControls().leftTrackForward != tankControls.leftTrackForward) {
+			opponentTanks.push_back(otherTank);
+		}
+	}
+
+	return opponentTanks;
+}
+
 void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex) {
 	Tank* tank = tanks[activeTankIndex];
 	if (tank->shouldShoot(tanks)) {
 		shoot(tank);
 	}
-	tank->makeMove(shells, tanks, walls);
 
+	std::vector<Tank*> opponentTanks = getOpponentTanks(tanks, tank);
+	tank->makeMove(shells, opponentTanks, walls);
 }
 
 void GameManager::shoot(Tank* player) {
