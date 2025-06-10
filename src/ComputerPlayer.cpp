@@ -1,183 +1,176 @@
 #include "ComputerPlayer.h"
-#include <cmath>
+#include "GameManager.h"
 #include <algorithm>
-#include <iostream>
+#include <cmath>
 
 ComputerPlayer::ComputerPlayer(int x, int y, int color)
-    : Tank(x, y, P2_CONTROLS, color) {
+    : Tank(x, y, P2_CONTROLS, color) {  // Using P2_CONTROLS as default, but computer doesn't use them
 }
 
-ComputerPlayer::PointDistance ComputerPlayer::calculateDistance(int x1, int y1, int x2, int y2) const {
-    PointDistance dist;
-    dist.xDistance = std::abs(x1 - x2);
-    dist.yDistance = std::abs(y1 - y2);
-    dist.distance = dist.xDistance + dist.yDistance;
-    return dist;
+bool ComputerPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
+    // Only shoot if we can shoot and have a valid target
+    return canShoot() && canShootTarget(opponentTanks, currentShells);
 }
 
 void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
     const std::vector<Tank*>& opponentTanks,
     const std::vector<Wall>& walls) {
-    if (shouldMoveTank(shells)) {
-        moveTankFromShell(shells);
-        return;
-    }
-    if (shouldShoot(opponentTanks)) {
-        aimAtTank(opponentTanks); // should also aim at possible shells
-        return;
-    }
+    // Store current shells for shouldShoot
+    currentShells = shells;
 
-
-    Tank* nearestOpponent = nullptr;
-    int minDistance = INT_MAX;
-    for (const auto& opponent : opponentTanks) {
-        PointDistance dist = calculateDistance(getX(), getY(), opponent->getX(), opponent->getY());
-        if (dist.distance < minDistance) {
-            minDistance = dist.distance;
-            nearestOpponent = opponent;
-        }
-    }
-
-    if (nearestOpponent && minDistance > SHOOTING_RANGE) {
-        // Move towards opponent
-        PointDistance dist = calculateDistance(getX(), getY(), nearestOpponent->getX(), nearestOpponent->getY());
-        if (dist.xDistance > dist.yDistance) {
-            setDirection(dist.xDistance > 0 ? Direction::RIGHT : Direction::LEFT);
-        }
-        else {
-            setDirection(dist.yDistance > 0 ? Direction::DOWN : Direction::UP);
-        }
-        Tank::move();
-    }
-}
-
-bool ComputerPlayer::shouldMoveTank(const std::vector<Shell*>& shells) {
-    return isCloseToShell(shells) != nullptr;
-}
-
-bool ComputerPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
-    for (const auto& opponent : opponentTanks) {
-        PointDistance dist = calculateDistance(getX(), getY(), opponent->getX(), opponent->getY());
-        if (dist.distance <= SHOOTING_RANGE && canShoot()) {
-            return true;
-        }
-    }
-    return false;
-}
-
-Shell* ComputerPlayer::isCloseToShell(const std::vector<Shell*>& shells) {
-    for (const auto& shell : shells) {
-        PointDistance dist = calculateDistance(getX(), getY(), shell->getX(), shell->getY());
-
-        if (dist.xDistance <= DANGER_DISTANCE && dist.yDistance <= DANGER_DISTANCE) {
-            Direction shellDir = shell->getDirection();
-            bool isInDirection = false;
-
-            switch (shellDir) {
-            case Direction::UP:
-                isInDirection = shell->getY() > getY();
-                break;
-            case Direction::DOWN:
-                isInDirection = shell->getY() < getY();
-                break;
-            case Direction::LEFT:
-                isInDirection = shell->getX() > getX();
-                break;
-            case Direction::RIGHT:
-                isInDirection = shell->getX() < getX();
-                break;
-            default:
-                break;
+    // First priority: Avoid shells
+    if (isShellChasing(shells)) {
+        for (const auto& shell : shells) {
+            if (std::abs(shell->getX() - getX()) <= DANGER_DISTANCE &&
+                std::abs(shell->getY() - getY()) <= DANGER_DISTANCE) {
+                moveAwayFromShell(shell);
+                return;
             }
-
-            if (isInDirection) return shell;
         }
     }
-    return nullptr;
+
+    // Second priority: Shoot targets if possible
+    if (canShootTarget(opponentTanks, shells)) {
+        aimAtTarget(opponentTanks, shells);
+        return;
+    }
+
+    // Third priority: Move towards opponent
+    moveTowardsOpponent(opponentTanks);
 }
 
-bool ComputerPlayer::isOpponentInRange(const std::vector<Tank*>& opponentTanks) {
+Tank* ComputerPlayer::getClosestOpponent(const std::vector<Tank*>& opponentTanks) const {
+    Tank* closest = nullptr;
+    int minDist = INT_MAX;
+
     for (const auto& opponent : opponentTanks) {
-        PointDistance dist = calculateDistance(getX(), getY(), opponent->getX(), opponent->getY());
-        if (dist.distance <= SHOOTING_RANGE) {
+        int dx = opponent->getX() - getX();
+        int dy = opponent->getY() - getY();
+        int dist = dx * dx + dy * dy;  // Use squared distance for efficiency
+        if (dist < minDist) {
+            minDist = dist;
+            closest = opponent;
+        }
+    }
+    return closest;
+}
+
+void ComputerPlayer::moveTowardsOpponent(const std::vector<Tank*>& opponentTanks) {
+    Tank* closest = getClosestOpponent(opponentTanks);
+    if (!closest) return;
+
+    int dx = closest->getX() - getX();
+    int dy = closest->getY() - getY();
+
+    // Move in the direction of the largest difference
+    if (std::abs(dx) > std::abs(dy)) {
+        setDirection(dx > 0 ? Direction::RIGHT : Direction::LEFT);
+    }
+    else {
+        setDirection(dy > 0 ? Direction::DOWN : Direction::UP);
+    }
+    Tank::move();
+}
+
+bool ComputerPlayer::isShellChasing(const std::vector<Shell*>& shells) const {
+    for (const auto& shell : shells) {
+        if (std::abs(shell->getX() - getX()) <= DANGER_DISTANCE &&
+            std::abs(shell->getY() - getY()) <= DANGER_DISTANCE) {
             return true;
         }
     }
     return false;
 }
 
-void ComputerPlayer::moveTankFromShell(const std::vector<Shell*>& shells) {
-    Shell* dangerousShell = isCloseToShell(shells);
-    if (!dangerousShell) {
-        return;
+void ComputerPlayer::moveAwayFromShell(const Shell* shell) {
+    int dx = getX() - shell->getX();
+    int dy = getY() - shell->getY();
+
+    // Move in the opposite direction of the shell
+    if (std::abs(dx) > std::abs(dy)) {
+        setDirection(dx > 0 ? Direction::RIGHT : Direction::LEFT);
+    }
+    else {
+        setDirection(dy > 0 ? Direction::DOWN : Direction::UP);
+    }
+    Tank::move();
+}
+
+bool ComputerPlayer::canShootTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells) const {
+    // First check for shells aimed at us
+    for (const auto& shell : shells) {
+        if (isShellAimedAtMe(shell) && (shell->getX() == getX() || shell->getY() == getY())) {
+            return true;
+        }
     }
 
-    Direction shellDir = dangerousShell->getDirection();
-    Direction moveDir;
+    // Then check for opponent tanks
+    for (const auto& opponent : opponentTanks) {
+        // Check if opponent is in line of sight
+        if (opponent->getX() == getX() || opponent->getY() == getY()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void ComputerPlayer::aimAtTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells) {
+    // First try to shoot shells aimed at us
+    for (const auto& shell : shells) {
+        if (isShellAimedAtMe(shell)) {
+            if (shell->getX() == getX()) {
+                setDirection(shell->getY() < getY() ? Direction::UP : Direction::DOWN);
+                return;
+            }
+            if (shell->getY() == getY()) {
+                setDirection(shell->getX() < getX() ? Direction::LEFT : Direction::RIGHT);
+                return;
+            }
+        }
+    }
+
+    // If no dangerous shells, aim at opponent tanks
+    for (const auto& opponent : opponentTanks) {
+        if (opponent->getX() == getX()) {
+            setDirection(opponent->getY() < getY() ? Direction::UP : Direction::DOWN);
+            return;
+        }
+        if (opponent->getY() == getY()) {
+            setDirection(opponent->getX() < getX() ? Direction::LEFT : Direction::RIGHT);
+            return;
+        }
+    }
+}
+
+bool ComputerPlayer::isShellAimedAtMe(const Shell* shell) const {
+    if (!shell) return false;
+
+    // Check if shell is moving towards us
+    Direction shellDir = shell->getDirection();
+    int dx = getX() - shell->getX();
+    int dy = getY() - shell->getY();
 
     switch (shellDir) {
     case Direction::UP:
-        moveDir = Direction::DOWN;
-        break;
+        return shell->getY() > getY() && shell->getX() == getX();
     case Direction::DOWN:
-        moveDir = Direction::UP;
-        break;
+        return shell->getY() < getY() && shell->getX() == getX();
     case Direction::LEFT:
-        moveDir = Direction::RIGHT;
-        break;
+        return shell->getX() > getX() && shell->getY() == getY();
     case Direction::RIGHT:
-        moveDir = Direction::LEFT;
-        break;
+        return shell->getX() < getX() && shell->getY() == getY();
     default:
-        return;
-    }
-
-    this->setDirection(moveDir);
-    this->move();
-}
-
-void ComputerPlayer::aimAtTank(const std::vector<Tank*>& opponentTanks) {
-    Tank* nearestOpponent = nullptr;
-    int minDistance = INT_MAX;
-
-    for (const auto& opponent : opponentTanks) {
-        PointDistance dist = calculateDistance(getX(), getY(), opponent->getX(), opponent->getY());
-        if (dist.distance < minDistance) {
-            minDistance = dist.distance;
-            nearestOpponent = opponent;
-        }
-    }
-
-    if (nearestOpponent) {
-        int dx = nearestOpponent->getX() - getX();
-        int dy = nearestOpponent->getY() - getY();
-
-		int angle = //TODO: use same angle calculation as in HumanPlayer
-            (dx == 0 && dy < 0) ? 0 :
-            (dx > 0 && dy < 0) ? 45 :
-            (dx > 0 && dy == 0) ? 90 :
-            (dx > 0 && dy > 0) ? 135 :
-            (dx == 0 && dy > 0) ? 180 :
-            (dx < 0 && dy > 0) ? 225 :
-            (dx < 0 && dy == 0) ? 270 :
-            (dx < 0 && dy < 0) ? 315 :
-            0; // default
-
-        rotateCannon(angle);
+        return false;
     }
 }
 
-
-bool ComputerPlayer::isPathClear(const Tank* target, const std::vector<Wall>& walls) {
-    for (const auto& wall : walls) {
-        int wx = wall.getX();
-        int wy = wall.getY();
-
-        if (wx >= std::min(getX(), target->getX()) && wx <= std::max(getX(), target->getX()) &&
-            wy >= std::min(getY(), target->getY()) && wy <= std::max(getY(), target->getY())) {
-            return false;
-        }
+bool ComputerPlayer::isMyTanksInDirection(const std::vector<Tank*>& myTanks, Direction shootDir) const {
+    for (const auto& tank : myTanks) {
+        if (tank == this) continue;
+        if (shootDir == Direction::UP && tank->getX() == getX() && tank->getY() < getY()) return true;
+        if (shootDir == Direction::DOWN && tank->getX() == getX() && tank->getY() > getY()) return true;
+        if (shootDir == Direction::LEFT && tank->getY() == getY() && tank->getX() < getX()) return true;
+        if (shootDir == Direction::RIGHT && tank->getY() == getY() && tank->getX() > getX()) return true;
     }
-
-    return true;
+    return false;
 }
