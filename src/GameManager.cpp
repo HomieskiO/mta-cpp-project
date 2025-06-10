@@ -1,3 +1,8 @@
+#include "GameObject.h"
+#include "MovingObject.h"
+#include "Tank.h"
+#include "HumanPlayer.h"
+#include "ComputerPlayer.h"
 #include "GameManager.h"
 #include <iostream>
 #include <fstream> 
@@ -6,9 +11,11 @@
 #include <windows.h>
 #include "Screen.h"
 
-GameManager::GameManager(bool coloredGame, const std::string& screenFile) {
+GameManager::GameManager(bool coloredGame, const std::string& screenFile, PlayerType player1Type, PlayerType player2Type) {
 	this->coloredGame = coloredGame;
 	this->screenFile = screenFile;
+	this->player1Type = player1Type;
+	this->player2Type = player2Type;
 	isRunning = false;
 	isPaused = false;
 	player1Tanks = {};
@@ -74,34 +81,21 @@ bool GameManager::isValidCannonPosition(int x, int y) {
 	if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) {
 		return false;
 	}
-
 	for (const Wall& wall : walls) {
-		if (wall.getX() == x && wall.getY() == y) {
-			return false;
-		}
+		if (wall.getX() == x && wall.getY() == y) return false;
 	}
-
 	for (const Mine& mine : mines) {
-		if (mine.getX() == x && mine.getY() == y) {
-			return false;
-		}
+		if (mine.getX() == x && mine.getY() == y) return false;
 	}
-
 	for (const Tank* tank : player1Tanks) {
-		if (tank->getX() == x && tank->getY() == y) {
-			return false;
-		}
+		if (tank->getX() == x && tank->getY() == y) return false;
 	}
-
 	for (const Tank* tank : player2Tanks) {
-		if (tank->getX() == x && tank->getY() == y) {
-			return false;
-		}
+		if (tank->getX() == x && tank->getY() == y) return false;
 	}
 
 	return true;
 }
-
 
 void GameManager::validateTankCannon(Tank* tank) {
 	for (int i = 0; i < 8; i++) {
@@ -111,6 +105,15 @@ void GameManager::validateTankCannon(Tank* tank) {
 		tank->rotateCannon(45);
 	}
 	tank->removeCannon();
+}
+
+void GameManager::validateAllTanks() {
+	for (Tank* tank : player1Tanks) {
+		validateTankCannon(tank);
+	}
+	for (Tank* tank : player2Tanks) {
+		validateTankCannon(tank);
+	}
 }
 
 bool GameManager::initializeGameObjects(const std::string& filename) {
@@ -129,28 +132,32 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 	std::string line;
 	int y = 0;
 	while (std::getline(inFile, line) && y < BOARD_HEIGHT) {
-		for (int x = 0; x < line.size() && x < BOARD_WIDTH; ++x) {
+		for (size_t x = 0; x < line.size() && x < BOARD_WIDTH; ++x) {
 			char ch = line[x];
 			switch (ch) {
 			case '#': walls.push_back(Wall(x, y, wallColor)); break;
 			case '@': mines.push_back(Mine(x, y, mineColor)); break;
-			case '1': player1Tanks.push_back(new Tank(x, y, P1_CONTROLS, player1Color)); break;
-			case '2': player2Tanks.push_back(new Tank(x, y, P2_CONTROLS, player2Color)); break;
+			case '1':
+				if (player1Type == PlayerType::COMPUTER) {
+					player1Tanks.push_back(new ComputerPlayer(x, y, player1Color));
+				} else {
+					player1Tanks.push_back(new HumanPlayer(x, y, P1_CONTROLS, player1Color));
+				}
+				break;
+			case '2': 
+				if (player2Type == PlayerType::COMPUTER) {
+					player2Tanks.push_back(new ComputerPlayer(x, y, player2Color));
+				} else {
+					player2Tanks.push_back(new HumanPlayer(x, y, P2_CONTROLS, player2Color));
+				}
+				break;
 			case 'L': legendX = x; legendY = y; break;
 			}
 		}
 		y++;
 	}
 
-	// Validate cannons for all tanks
-	for (Tank* tank : player1Tanks) {
-		validateTankCannon(tank);
-	}
-
-	for (Tank* tank : player2Tanks) {
-		validateTankCannon(tank);
-	}
-
+	validateAllTanks();
 	return true;
 }
 
@@ -167,8 +174,8 @@ void GameManager::gameLoop() {
 		}
 		if (!isPaused) {
 			if (!tankMovementCooldown) {
-				handlePlayerInput(player1Tanks, player1ActiveTank);
-				handlePlayerInput(player2Tanks, player2ActiveTank);
+				handlePlayerInput(player1Tanks, player1ActiveTank, player2Tanks);
+				handlePlayerInput(player2Tanks, player2ActiveTank, player1Tanks);
 			}
 
 			updateGame();
@@ -182,67 +189,20 @@ void GameManager::gameLoop() {
 	}
 }
 
-// GPT prompt - give me a function that gets keyboard inputs async
-bool GameManager::isKeyPressed(int keyCode) {
-	return GetAsyncKeyState(keyCode) & 0x8000;
-}
-
-void GameManager::handlePlayerInput(std::vector<Tank*>& playerTanks, int& activeTankIndex) {
-	PlayerControls controls = playerTanks[activeTankIndex]->getControls();
-
-	if (isKeyPressed(controls.switchActiveTank)) {
-		activeTankIndex = (++activeTankIndex) % playerTanks.size();
-	}
-
-	Tank* player = playerTanks[activeTankIndex];
-
-	if (isKeyPressed(controls.shoot)) {
-		this->shoot(player);
-	}
-	if (isKeyPressed(controls.stay)) {
-		player->setMovementState(MovementState::STAY);
-		player->setRotation(0);
-		return;
-	}
-	if (isKeyPressed(controls.rightTrackForward) && isKeyPressed(controls.rightTrackBackward)) {
-		return;
-	}
-	if (isKeyPressed(controls.leftTrackForward) && isKeyPressed(controls.leftTrackBackward)) {
-		return;
-	}
-	if (isKeyPressed(controls.rightTrackForward) && isKeyPressed(controls.leftTrackForward)) {
-		player->setMovementState(MovementState::FORWARD);
-	}
-	if (isKeyPressed(controls.rightTrackBackward) && isKeyPressed(controls.leftTrackBackward)) {
-		player->setMovementState(MovementState::BACKWARD);
-	}
-	if (isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.leftTrackBackward)) {
-		player->setRotation(-45);
-	}
-	if (isKeyPressed(controls.rightTrackBackward) && !isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.leftTrackBackward)) {
-		player->setRotation(45);
-	}
-	if (isKeyPressed(controls.leftTrackForward) && !isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.rightTrackBackward)) {
-		player->setRotation(45);
-	}
-	if (isKeyPressed(controls.leftTrackBackward) && !isKeyPressed(controls.rightTrackForward) && !isKeyPressed(controls.rightTrackBackward)) {
-		player->setRotation(-45);
-	}
-	if (isKeyPressed(controls.leftTrackForward) && isKeyPressed(controls.rightTrackBackward)) {
-		player->setRotation(90);
-	}
-	if (isKeyPressed(controls.leftTrackBackward) && isKeyPressed(controls.rightTrackForward)) {
-		player->setRotation(-90);
+void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex, std::vector<Tank*>& opponentTanks) {
+	Tank* tank = tanks[activeTankIndex];
+	tank->makeMove(shells, opponentTanks, walls);
+	if (tank->shouldShoot(opponentTanks)) {
+		shoot(tank);
 	}
 }
 
 void GameManager::shoot(Tank* player) {
 	if (player->canShoot()) {
 		shells.push_back(new Shell(player->getCannonX(), player->getCannonY(), player->getDirection(), player->getColor()));
-		
 		// spawn shell one step further to prevent ruining your own cannon while moving
 		shells.back()->move();
-		checkShellsCollisions();
+		this->checkShellsCollisions();
 		player->setCooldown(SHOOT_COOLDOWN + 1);
 	}
 }
@@ -273,7 +233,6 @@ void GameManager::updateGame() {
 		moveTanks(player1Tanks);
 		moveTanks(player2Tanks);
 	}
-
 	for (auto it = shells.begin(); it != shells.end(); ) {
 		Shell* shell = *it;
 		shell->move();
@@ -285,7 +244,6 @@ void GameManager::updateGame() {
 			++it;
 		}
 	}
-
 	checkCollisions();
 	updateCooldowns();
 }
@@ -374,14 +332,12 @@ void GameManager::checkShellShellsCollisions(Shell* shell, bool& collided) {
 			collided = true;
 			delete otherShell;
 			it = shells.erase(it);
-
 			break;
 		}
 		else {
 			++it;
 		}
 	}
-
 }
 
 void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
@@ -404,7 +360,7 @@ void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 	}
 }
 
-void GameManager::checkTanksMinesCollisions(std::vector <Tank*>& playerTanks, int& activeTankIndex) {
+void GameManager::checkTanksMinesCollisions(std::vector<Tank*>& playerTanks, int& activeTankIndex) {
 	for (auto& tank : playerTanks) {
 		for (auto mineIt = mines.begin(); mineIt != mines.end();) {
 			if (tank->collidesWith(*mineIt)) {

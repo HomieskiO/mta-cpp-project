@@ -1,6 +1,5 @@
 #include "IOUtils.h"
 
-
 void gotoxy(int x, int y)
 {
 	HANDLE hConsoleOutput;
@@ -24,4 +23,9 @@ void hideCursor()
 void clearScreen()
 {
 	system("cls");
+}
+
+// GPT prompt - give me a function that gets keyboard inputs async
+bool isKeyPressed(int keyCode) {
+	return GetAsyncKeyState(keyCode) & 0x8000;
 }
