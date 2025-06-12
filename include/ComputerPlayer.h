@@ -2,6 +2,7 @@
 #include "Tank.h"
 #include "Shell.h"
 #include "Wall.h"
+#include "GameRecorder.h"
 #include <vector>
 
 constexpr int DANGER_DISTANCE = 20;    // Maximum distance at which we consider a shell dangerous
@@ -23,7 +24,5 @@ private:
     void aimAtTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells);
     bool isMyTanksInDirection(const std::vector<Tank*>& myTanks, Direction shootDir) const;
     bool isShellAimedAtMe(const Shell* shell) const;
-    void moveTowardsOpponent(const std::vector<Tank*>& opponentTanks);
-    Tank* getClosestOpponent(const std::vector<Tank*>& opponentTanks) const;
     std::vector<Shell*> currentShells; // Store current shells for shouldShoot
 };
