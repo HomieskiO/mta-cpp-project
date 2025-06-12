@@ -2,6 +2,7 @@
 #include "Tank.h"
 #include "Shell.h"
 #include "Wall.h"
+#include "GameRecorder.h"
 #include <vector>
 
 constexpr int DANGER_DISTANCE = 20;    // Maximum distance at which we consider a shell dangerous
@@ -14,7 +15,8 @@ private:
     ComputerPlayer(int x, int y, int color);
     void makeMove(const std::vector<Shell*>& shells,
         const std::vector<Tank*>& tanks,
-        const std::vector<Wall>& walls) override;
+        const std::vector<Wall>& walls,
+        GameRecorder& gameRecorder) override;
     bool shouldShoot(const std::vector<Tank*>& opponentTanks) override;
     bool isShellChasing(const std::vector<Shell*>& shells) const;
     void moveAwayFromShell(const Shell* shell);

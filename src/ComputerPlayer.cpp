@@ -14,7 +14,8 @@ bool ComputerPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
 
 void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
     const std::vector<Tank*>& opponentTanks,
-    const std::vector<Wall>& walls) {
+    const std::vector<Wall>& walls,
+    GameRecorder& gameRecorder) {
     // Store current shells for shouldShoot
     currentShells = shells;
 
