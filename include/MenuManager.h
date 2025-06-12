@@ -34,10 +34,7 @@ private:
     PlayerType player2Type;
 
     void showInstructionsAndKeys();
-    void selectScreen();
     void selectGameMode();
     void displayGameModeMenu();
-    std::vector<std::string> getAvailableScreens();
-    void displayScreens(const std::vector<std::string>& screens);
     void displayChangeScreenMenu();
 };
