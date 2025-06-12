@@ -9,6 +9,8 @@ MenuManager::MenuManager() {
     gameManager = nullptr;
     coloredGame = true;
     selectedScreenFile = "";
+    player1Type = PlayerType::HUMAN;
+    player2Type = PlayerType::HUMAN;
 }
 
 void MenuManager::openMenu() {
@@ -29,7 +31,8 @@ void MenuManager::openMenu() {
         switch (choice) {
         case START_GAME:
             clearScreen();
-            gameManager = new GameManager(coloredGame, selectedScreenFile);
+            selectGameMode();
+            gameManager = new GameManager(coloredGame, selectedScreenFile, player1Type, player2Type);
             gameManager->startGame();
             delete gameManager;
             choice = 0;
@@ -60,6 +63,54 @@ void MenuManager::openMenu() {
             break;
         }
     }
+}
+
+void MenuManager::selectGameMode() {
+    char choice;
+    bool validChoice = false;
+
+    while (!validChoice) {
+        displayGameModeMenu();
+        choice = _getch();
+        size_t index = choice - '1';
+
+        if (index >= 0 && index < 3) {
+            switch (index) {
+                case 0:
+                    player1Type = PlayerType::HUMAN;
+                    player2Type = PlayerType::HUMAN;
+                    std::cout << "\nGame mode selected: Human vs Human\n";
+                    break;
+                case 1:
+                    player1Type = PlayerType::HUMAN;
+                    player2Type = PlayerType::COMPUTER;
+                    std::cout << "\nGame mode selected: Human vs Computer\n";
+                    break;
+                case 2:
+                    player1Type = PlayerType::COMPUTER;
+                    player2Type = PlayerType::COMPUTER;
+                    std::cout << "\nGame mode selected: Computer vs Computer\n";
+                    break;
+            }
+            validChoice = true;
+        }
+        else {
+            std::cout << "\nInvalid choice. Please try again.\n";
+            Sleep(FRAME_RATE_MS);
+        }
+    }
+
+    std::cout << "\nPress any key to continue...\n";
+    _getch();
+}
+
+void MenuManager::displayGameModeMenu() {
+    clearScreen();
+    std::cout << "===================== TANK BATTLE - GAME MODE SETTINGS =====================\n\n";
+    std::cout << "1. Human vs Human\n";
+    std::cout << "2. Human vs Computer\n";
+    std::cout << "3. Computer vs Computer\n\n";
+    std::cout << "Choose a game mode by number (1-3): ";
 }
 
 void MenuManager::displayChangeScreenMenu() {

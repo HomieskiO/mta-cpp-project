@@ -3,7 +3,9 @@
 #include "MovingObject.h"
 #include "Cannon.h"
 #include "Shell.h"
+#include "Wall.h"
 #include <string>
+#include <vector>
 
 constexpr auto TANK_SYMBOL = 'O';
 constexpr auto SHOOT_COOLDOWN = 5;
@@ -16,6 +18,11 @@ struct PlayerControls {
     int stay;
     int shoot;
     int switchActiveTank;
+};
+
+enum class PlayerType {
+    HUMAN,
+    COMPUTER
 };
 
 constexpr PlayerControls P1_CONTROLS = {
@@ -43,10 +50,10 @@ public:
     void setRotation(int rotation);
     int getRotation() const;
     int getLastRotation() const;
-    void rotateCannon();
-    void rotateCannon(int angle);
-    void move();
-    bool canShoot();
+    virtual void rotateCannon();
+    virtual void rotateCannon(int angle);
+    virtual void move() override;
+    virtual bool canShoot();
 	void draw() const override;
 	int getCannonX() const;
 	int getCannonY() const;
@@ -58,5 +65,9 @@ public:
     void alignCannon();
     Tank(const Tank&) = default;
     Tank& operator=(const Tank&) = default;
-    ~Tank();
+    virtual ~Tank();
+    virtual void makeMove(const std::vector<Shell*>& shells,
+                         const std::vector<Tank*>& tanks,
+                         const std::vector<Wall>& walls) = 0;
+    virtual bool shouldShoot(const std::vector<Tank*>& opponentTanks) = 0;
 };

@@ -34,5 +34,6 @@ public:
     Direction getDirection() const;
     void setDirection(Direction direction);
     void draw() const override;
-	void move();
+	virtual void move(); 
+    virtual ~MovingObject() = default; 
 };

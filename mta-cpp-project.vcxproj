@@ -39,6 +39,8 @@
 		<ClCompile Include="src\Wall.cpp" />
 		<ClCompile Include="src\Mine.cpp" />
 		<ClCompile Include="src\Screen.cpp" />
+		<ClCompile Include="src\ComputerPlayer.cpp" />
+		<ClCompile Include="src\HumanPlayer.cpp" />
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="include\Cannon.h" />
@@ -52,6 +54,8 @@
 		<ClInclude Include="include\Wall.h" />
 		<ClInclude Include="include\Mine.h" />
 		<ClInclude Include="include\Screen.h" />
+		<ClInclude Include="include\ComputerPlayer.h" />
+		<ClInclude Include="include\HumanPlayer.h" />		
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="screens\tanks-game_01.screen" />
