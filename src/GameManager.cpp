@@ -199,6 +199,11 @@ void GameManager::gameLoop() {
 }
 
 void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex, std::vector<Tank*>& opponentTanks) {
+	//handle switching active tank for human type player before making noves
+	PlayerControls controls = tanks[activeTankIndex]->getControls();
+	if (isKeyPressed(controls.switchActiveTank)) {
+		activeTankIndex = (++activeTankIndex) % tanks.size();
+	}
 	Tank* tank = tanks[activeTankIndex];
 	tank->makeMove(shells, opponentTanks, walls, gameRecorder);
 	if (tank->shouldShoot(opponentTanks)) {
