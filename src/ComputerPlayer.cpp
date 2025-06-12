@@ -2,7 +2,6 @@
 #include "GameManager.h"
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 // General comment : computer player class  only aims and rotates, all shooting and movement is actually done in GameManager
 
