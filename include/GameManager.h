@@ -27,6 +27,7 @@ constexpr auto SCREEN_WIN_SCORE = 100;
 #include "Wall.h"
 #include "Screen.h"
 #include "ComputerPlayer.h"
+#include "GameRecorder.h"
 
 class GameManager {
 private:
@@ -48,6 +49,7 @@ private:
     int legendX;
     int legendY;
     bool tankMovementCooldown;
+    GameRecorder gameRecorder;
 
 	//chatGPT prompt to create templates for collision checking
     template<typename T1, typename T2>

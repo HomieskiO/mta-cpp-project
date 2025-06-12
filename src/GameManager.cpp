@@ -30,6 +30,8 @@ GameManager::GameManager(bool coloredGame, const std::string& screenFile, Player
 
 void GameManager::startGame() {
 	isRunning = true;
+	GameRecorder gameRecorder;
+	gameRecorder.tick = 0;
 	clearScreen();
 	ClearAllObjects();
 
@@ -131,6 +133,10 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 
 	std::string line;
 	int y = 0;
+
+	int p1_tank_id = 0;
+	int p2_tank_id = 0;
+
 	while (std::getline(inFile, line) && y < BOARD_HEIGHT) {
 		for (size_t x = 0; x < line.size() && x < BOARD_WIDTH; ++x) {
 			char ch = line[x];
@@ -141,15 +147,17 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 				if (player1Type == PlayerType::COMPUTER) {
 					player1Tanks.push_back(new ComputerPlayer(x, y, player1Color));
 				} else {
-					player1Tanks.push_back(new HumanPlayer(x, y, P1_CONTROLS, player1Color));
+					player1Tanks.push_back(new HumanPlayer(x, y, P1_CONTROLS, player1Color, 1, p1_tank_id));
 				}
+				p1_tank_id++;
 				break;
 			case '2': 
 				if (player2Type == PlayerType::COMPUTER) {
 					player2Tanks.push_back(new ComputerPlayer(x, y, player2Color));
 				} else {
-					player2Tanks.push_back(new HumanPlayer(x, y, P2_CONTROLS, player2Color));
+					player2Tanks.push_back(new HumanPlayer(x, y, P2_CONTROLS, player2Color, 2, p2_tank_id));
 				}
+				p2_tank_id++;
 				break;
 			case 'L': legendX = x; legendY = y; break;
 			}
@@ -186,14 +194,16 @@ void GameManager::gameLoop() {
 			}
 		}
 		Sleep(FRAME_RATE_MS);
+		gameRecorder.tick++;
 	}
 }
 
 void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex, std::vector<Tank*>& opponentTanks) {
 	Tank* tank = tanks[activeTankIndex];
-	tank->makeMove(shells, opponentTanks, walls);
+	tank->makeMove(shells, opponentTanks, walls, gameRecorder);
 	if (tank->shouldShoot(opponentTanks)) {
 		shoot(tank);
+		gameRecorder.logAction(tank->playerId, tank->tankId, ActionType::SHOOT);
 	}
 }
 
@@ -512,7 +522,7 @@ void GameManager::gameOver() {
 		player1Score += SCREEN_WIN_SCORE;
 		message = "Player 1 wins this level!";
 	}
-
+	gameRecorder.saveToFile("test.record");
 	// Load next screen if available
 	std::vector<Screen> screens;
 	if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {

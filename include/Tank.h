@@ -1,6 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "MovingObject.h"
+#include "GameRecorder.h"
 #include "Cannon.h"
 #include "Shell.h"
 #include "Wall.h"
@@ -43,6 +44,8 @@ private:
     int rotation;
     int lastRotation;
 public:
+    int playerId = 0;
+    int tankId = 0;
 	Tank(int x, int y, PlayerControls controls);
     Tank(int x, int y, PlayerControls controls, int color);
     PlayerControls getControls() const;
@@ -68,6 +71,7 @@ public:
     virtual ~Tank();
     virtual void makeMove(const std::vector<Shell*>& shells,
                          const std::vector<Tank*>& tanks,
-                         const std::vector<Wall>& walls) = 0;
+                         const std::vector<Wall>& walls,
+                         GameRecorder& gameRecorder) = 0;
     virtual bool shouldShoot(const std::vector<Tank*>& opponentTanks) = 0;
 };
