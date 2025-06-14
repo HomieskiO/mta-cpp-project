@@ -24,5 +24,7 @@ private:
     void aimAtTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells);
     bool isMyTanksInDirection(const std::vector<Tank*>& myTanks, Direction shootDir) const;
     bool isShellAimedAtMe(const Shell* shell) const;
+    bool isInLineWithTarget(const GameObject* target) const;
+    void setDirectionToTarget(const GameObject* target);
     std::vector<Shell*> currentShells; // Store current shells for shouldShoot
 };

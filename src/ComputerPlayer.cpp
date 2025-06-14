@@ -8,9 +8,8 @@
 ComputerPlayer::ComputerPlayer(int x, int y, int color)
     : Tank(x, y, P2_CONTROLS, color) {  // Using P2_CONTROLS as default value
 }
-
+// Only shoot if we can shoot and have a valid target  
 bool ComputerPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
-    // Only shoot if we can shoot and have a valid target
     return canShoot() && canShootTarget(opponentTanks, currentShells);
 }
 
@@ -18,9 +17,7 @@ void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
     const std::vector<Tank*>& opponentTanks,
     const std::vector<Wall>& walls,
     GameRecorder& gameRecorder) {
-    // Store current shells for shouldShoot
     currentShells = shells;
-
     // First priority: move away from shells
     if (isShellChasing(shells)) {
         for (const auto& shell : shells) {
@@ -31,13 +28,18 @@ void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
             }
         }
     }
+    else {
+        setMovementState(MovementState::STAY);
+    }
     // Second priority: Shoot targets if possible
     if (canShootTarget(opponentTanks, shells)) {
         aimAtTarget(opponentTanks, shells);
         return;
-
-        // TODO: Third priority will be moving towards opponent
     }
+
+    // Third priority will be moving towards opponent
+    // TODO: Making it moving forward to prevent game from freezing but need to implement better logic and avoidance of mines and walls
+    setMovementState(MovementState::FORWARD);
 }
 
 bool ComputerPlayer::isShellChasing(const std::vector<Shell*>& shells) const {
@@ -54,30 +56,32 @@ void ComputerPlayer::moveAwayFromShell(const Shell* shell) {
     int dx = getX() - shell->getX();
     int dy = getY() - shell->getY();
 
-    // Move in the opposite direction of the shell
-    if (std::abs(dx) > std::abs(dy)) {
-        setDirection(dx > 0 ? Direction::RIGHT : Direction::LEFT);
-    }
-    else {
-        setDirection(dy > 0 ? Direction::DOWN : Direction::UP);
-    }
-    // TODO: Set movement state as backward or stay as well and not only forward
-    // TODO: movement of tanks should avoid mines
-    setMovementState(MovementState::FORWARD);
-    return;
+    bool moveHorizontally = std::abs(dx) > std::abs(dy);
+    Direction newDirection = moveHorizontally ?
+        (dx > 0 ? Direction::RIGHT : Direction::LEFT) :
+        (dy > 0 ? Direction::DOWN : Direction::UP);
+    setDirection(newDirection);
+
+    bool shellMovingTowards = moveHorizontally ?
+        ((dx > 0 && shell->getDirection() == Direction::LEFT) ||
+            (dx < 0 && shell->getDirection() == Direction::RIGHT)) :
+        ((dy > 0 && shell->getDirection() == Direction::UP) ||
+            (dy < 0 && shell->getDirection() == Direction::DOWN));
+
+    setMovementState(shellMovingTowards ? MovementState::BACKWARD : MovementState::FORWARD);
 }
 
 bool ComputerPlayer::canShootTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells) const {
-    // First check for shells aimed at us
+    // Check for shells aimed at us
     for (const auto& shell : shells) {
-        if (isShellAimedAtMe(shell) && (shell->getX() == getX() || shell->getY() == getY())) {
+        if (isShellAimedAtMe(shell) && isInLineWithTarget(shell)) {
             return true;
         }
     }
 
-    // Try to shoot at opponent tanks
+    // Check for opponent tanks to shoot at
     for (const auto& opponent : opponentTanks) {
-        if (opponent->getX() == getX() || opponent->getY() == getY()) {
+        if (isInLineWithTarget(opponent)) {
             return true;
         }
     }
@@ -85,62 +89,54 @@ bool ComputerPlayer::canShootTarget(const std::vector<Tank*>& opponentTanks, con
 }
 
 void ComputerPlayer::aimAtTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells) {
+    // First try to aim at dangerous shells
     for (const auto& shell : shells) {
         if (isShellAimedAtMe(shell)) {
-            if (shell->getX() == getX()) {
-                setDirection(shell->getY() < getY() ? Direction::UP : Direction::DOWN);
-                return;
-            }
-            if (shell->getY() == getY()) {
-                setDirection(shell->getX() < getX() ? Direction::LEFT : Direction::RIGHT);
-                return;
-            }
+            setDirectionToTarget(shell);
+            return;
         }
     }
 
     // If no dangerous shells, aim at opponent tanks
     for (const auto& opponent : opponentTanks) {
-        if (opponent->getX() == getX()) {
-            setDirection(opponent->getY() < getY() ? Direction::UP : Direction::DOWN);
-            return;
-        }
-        if (opponent->getY() == getY()) {
-            setDirection(opponent->getX() < getX() ? Direction::LEFT : Direction::RIGHT);
+        if (isInLineWithTarget(opponent)) {
+            setDirectionToTarget(opponent);
             return;
         }
     }
 }
 
-// TODO: change those to avoid code duplications
-bool ComputerPlayer::isShellAimedAtMe(const Shell* shell) const {
-    if (!shell) return false;
+bool ComputerPlayer::isInLineWithTarget(const GameObject* target) const {
+    return target->getX() == getX() || target->getY() == getY();
+}
 
-    // Check if shell is moving towards us
-    Direction shellDir = shell->getDirection();
-    int dx = getX() - shell->getX();
-    int dy = getY() - shell->getY();
-
-    switch (shellDir) {
-    case Direction::UP:
-        return shell->getY() > getY() && shell->getX() == getX();
-    case Direction::DOWN:
-        return shell->getY() < getY() && shell->getX() == getX();
-    case Direction::LEFT:
-        return shell->getX() > getX() && shell->getY() == getY();
-    case Direction::RIGHT:
-        return shell->getX() < getX() && shell->getY() == getY();
-    default:
-        return false;
+void ComputerPlayer::setDirectionToTarget(const GameObject* target) {
+    if (target->getX() == getX()) {
+        setDirection(target->getY() < getY() ? Direction::UP : Direction::DOWN);
     }
+    else {
+        setDirection(target->getX() < getX() ? Direction::LEFT : Direction::RIGHT);
+    }
+}
+
+bool ComputerPlayer::isShellAimedAtMe(const Shell* shell) const {
+    if (!shell || !isInLineWithTarget(shell)) return false;
+
+    return (shell->getDirection() == Direction::UP && shell->getY() > getY()) ||
+        (shell->getDirection() == Direction::DOWN && shell->getY() < getY()) ||
+        (shell->getDirection() == Direction::LEFT && shell->getX() > getX()) ||
+        (shell->getDirection() == Direction::RIGHT && shell->getX() < getX());
 }
 
 bool ComputerPlayer::isMyTanksInDirection(const std::vector<Tank*>& myTanks, Direction shootDir) const {
     for (const auto& tank : myTanks) {
         if (tank == this) continue;
-        if (shootDir == Direction::UP && tank->getX() == getX() && tank->getY() < getY()) return true;
-        if (shootDir == Direction::DOWN && tank->getX() == getX() && tank->getY() > getY()) return true;
-        if (shootDir == Direction::LEFT && tank->getY() == getY() && tank->getX() < getX()) return true;
-        if (shootDir == Direction::RIGHT && tank->getY() == getY() && tank->getX() > getX()) return true;
+        if (!isInLineWithTarget(tank)) continue;
+
+        return (shootDir == Direction::UP && tank->getY() < getY()) ||
+            (shootDir == Direction::DOWN && tank->getY() > getY()) ||
+            (shootDir == Direction::LEFT && tank->getX() < getX()) ||
+            (shootDir == Direction::RIGHT && tank->getX() > getX());
     }
     return false;
 }
