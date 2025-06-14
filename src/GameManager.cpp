@@ -219,6 +219,7 @@ void GameManager::shoot(Tank* player) {
 		shells.back()->move();
 		this->checkShellsCollisions();
 		player->setCooldown(SHOOT_COOLDOWN + 1);
+		Beep(500, 300); // Beep sound for shooting
 	}
 }
 
@@ -278,6 +279,7 @@ void GameManager::checkShellsCollisions() {
 		if (collided) {
 			delete shell;
 			it = shells.erase(it);
+			Beep(3000, 300); // Beep sound for collision
 		}
 		else {
 			++it;
