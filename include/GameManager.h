@@ -30,7 +30,7 @@ constexpr auto SCREEN_WIN_SCORE = 100;
 #include "GameRecorder.h"
 
 class GameManager {
-private:
+protected:
     bool coloredGame;
     bool isRunning;
     bool isPaused;
@@ -49,6 +49,7 @@ private:
     int legendX;
     int legendY;
     bool tankMovementCooldown;
+    bool shouldSaveSteps;
     GameRecorder gameRecorder;
 
 	//chatGPT prompt to create templates for collision checking
@@ -108,7 +109,7 @@ private:
 
 
 public:
-    GameManager(bool coloredGame, const std::string& screenFile = "", PlayerType player1Type = PlayerType::HUMAN, PlayerType player2Type = PlayerType::HUMAN);
+    GameManager(bool coloredGame, const std::string& screenFile = "", PlayerType player1Type = PlayerType::HUMAN, PlayerType player2Type = PlayerType::HUMAN, bool shouldSaveSteps = false);
     void startGame();
     GameManager(const GameManager&) = default;
     GameManager& operator=(const GameManager&) = default;

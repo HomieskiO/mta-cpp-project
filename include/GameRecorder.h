@@ -14,7 +14,8 @@ enum class ActionType {
     MOVE_FORWARD,
     MOVE_BACKWARD,
     SHOOT,
-    STAY
+    STAY,
+    END_GAME
 };
 
 
@@ -25,12 +26,31 @@ struct GameStep {
     ActionType action;
 };
 
+struct CollisionEvent {
+    int tick;
+    std::string whatWasHit;
+    int x, y;
+};
+
+struct MineDeathEvent {
+    int tick;
+    int playerId;
+    int tankId;
+    int x, y;
+};
+
 
 class GameRecorder {
 public:
+    GameRecorder(bool shouldSaveSteps);
     int tick;
+    bool shouldSaveSteps;
+    std::vector<CollisionEvent> collisions;
+    std::vector<MineDeathEvent> mineDeaths;
     void logAction(const int playerId, const int tankId, ActionType action);
     void saveToFile(const std::string& filename);
+    std::vector<GameStep> loadGameStepsFromCSV(const std::string& filePath);
+    std::string writeResultFile(const std::string& screenFileName, int player1Score, int player2Score);
     //void loadFromFile(const std::string& filename);
     //const std::vector<GameStep>& getLoadedSteps() const;
 

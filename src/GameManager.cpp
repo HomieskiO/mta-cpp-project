@@ -11,11 +11,12 @@
 #include <windows.h>
 #include "Screen.h"
 
-GameManager::GameManager(bool coloredGame, const std::string& screenFile, PlayerType player1Type, PlayerType player2Type) {
+GameManager::GameManager(bool coloredGame, const std::string& screenFile, PlayerType player1Type, PlayerType player2Type, bool shouldSaveSteps) : gameRecorder(shouldSaveSteps) {
 	this->coloredGame = coloredGame;
 	this->screenFile = screenFile;
 	this->player1Type = player1Type;
 	this->player2Type = player2Type;
+	this->shouldSaveSteps = shouldSaveSteps;
 	isRunning = false;
 	isPaused = false;
 	player1Tanks = {};
@@ -30,7 +31,6 @@ GameManager::GameManager(bool coloredGame, const std::string& screenFile, Player
 
 void GameManager::startGame() {
 	isRunning = true;
-	GameRecorder gameRecorder;
 	gameRecorder.tick = 0;
 	clearScreen();
 	ClearAllObjects();
@@ -200,15 +200,17 @@ void GameManager::gameLoop() {
 
 void GameManager::handlePlayerInput(std::vector<Tank*>& tanks, int& activeTankIndex, std::vector<Tank*>& opponentTanks) {
 	//handle switching active tank for human type player before making noves
-	PlayerControls controls = tanks[activeTankIndex]->getControls();
-	if (isKeyPressed(controls.switchActiveTank)) {
-		activeTankIndex = (++activeTankIndex) % tanks.size();
-	}
-	Tank* tank = tanks[activeTankIndex];
-	tank->makeMove(shells, opponentTanks, walls, gameRecorder);
-	if (tank->shouldShoot(opponentTanks)) {
-		shoot(tank);
-		gameRecorder.logAction(tank->playerId, tank->tankId, ActionType::SHOOT);
+	if (tanks.size() > 0) {
+		PlayerControls controls = tanks[activeTankIndex]->getControls();
+		if (isKeyPressed(controls.switchActiveTank)) {
+			activeTankIndex = (++activeTankIndex) % tanks.size();
+		}
+		Tank* tank = tanks[activeTankIndex];
+		tank->makeMove(shells, opponentTanks, walls, gameRecorder);
+		if (tank->shouldShoot(opponentTanks)) {
+			shoot(tank);
+			gameRecorder.logAction(tank->playerId, tank->tankId, ActionType::SHOOT);
+		}
 	}
 }
 
@@ -320,6 +322,7 @@ void GameManager::checkShellTankCollisions(Shell* shell, Tank* tank, bool& colli
 	if (shell && shell->collidesWith(tank)) {
 		tank->setState(false);
 		collided = true;
+		gameRecorder.collisions.push_back({gameRecorder.tick, "Tank", tank->getX(), tank->getY()});
 	}
 }
 
@@ -331,6 +334,7 @@ void GameManager::checkShellCannonsCollisions(Shell* shell, std::vector<Tank*>& 
 
 void GameManager::checkShellCannonCollisions(Shell* shell, Tank* tank, bool& collided) {
 	if (shell && tank->getCannon() && shell->collidesWith(tank->getCannon())) {
+		gameRecorder.collisions.push_back({ gameRecorder.tick, "Cannon", tank->getCannonX(), tank->getCannonY() });
 		tank->removeCannon();
 		collided = true;
 	}
@@ -347,6 +351,7 @@ void GameManager::checkShellShellsCollisions(Shell* shell, bool& collided) {
 
 		if (shell->collidesWith(*otherShell)) {
 			collided = true;
+			gameRecorder.collisions.push_back({ gameRecorder.tick, "Shell", shell->getX(), shell->getY()});
 			delete otherShell;
 			it = shells.erase(it);
 			break;
@@ -362,6 +367,7 @@ void GameManager::checkShellWallsCollisions(Shell* shell, bool& collided) {
 		if (shell->collidesWith(*wallIt)) {
 			wallIt->hit();
 			collided = true;
+			gameRecorder.collisions.push_back({ gameRecorder.tick, "Wall", shell->getX(), shell->getY() });
 
 			if (!wallIt->isAlive())
 				wallIt = walls.erase(wallIt);
@@ -382,6 +388,7 @@ void GameManager::checkTanksMinesCollisions(std::vector<Tank*>& playerTanks, int
 		for (auto mineIt = mines.begin(); mineIt != mines.end();) {
 			if (tank->collidesWith(*mineIt)) {
 				tank->setState(false);
+				gameRecorder.mineDeaths.push_back({ gameRecorder.tick, tank->playerId, tank->tankId, tank->getX(), tank->getY()});
 				mineIt = mines.erase(mineIt);
 			}
 			else {
@@ -529,7 +536,12 @@ void GameManager::gameOver() {
 		player1Score += SCREEN_WIN_SCORE;
 		message = "Player 1 wins this level!";
 	}
-	gameRecorder.saveToFile("test.record");
+	if (this->shouldSaveSteps){
+		gameRecorder.logAction(-1, -1, ActionType::END_GAME);
+		std::string stepsFile = screenFile.substr(0, screenFile.rfind('.')) + ".steps";
+		gameRecorder.saveToFile(stepsFile);
+		gameRecorder.writeResultFile(screenFile, player1Score, player2Score);
+	}
 	// Load next screen if available
 	std::vector<Screen> screens;
 	if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {

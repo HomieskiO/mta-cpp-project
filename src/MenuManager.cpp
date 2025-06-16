@@ -5,7 +5,8 @@
 #include "Screen.h"
 
 
-MenuManager::MenuManager() {
+MenuManager::MenuManager(bool shouldSaveSteps) {
+    this->shouldSaveSteps = shouldSaveSteps;
     gameManager = nullptr;
     coloredGame = true;
     selectedScreenFile = "";
@@ -32,7 +33,7 @@ void MenuManager::openMenu() {
         case START_GAME:
             clearScreen();
             selectGameMode();
-            gameManager = new GameManager(coloredGame, selectedScreenFile, player1Type, player2Type);
+            gameManager = new GameManager(coloredGame, selectedScreenFile, player1Type, player2Type, shouldSaveSteps);
             gameManager->startGame();
             delete gameManager;
             choice = 0;
