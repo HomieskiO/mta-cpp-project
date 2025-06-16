@@ -19,13 +19,14 @@ constexpr auto COMPUTER_VS_COMPUTER = '3';
 
 class MenuManager {
 public:
-    MenuManager();          
+    MenuManager(bool shouldSaveSteps);
     void openMenu();
     MenuManager(const MenuManager&) = delete;
     MenuManager& operator=(const MenuManager&) = delete;
     ~MenuManager() = default;
 
 private:
+    bool shouldSaveSteps;
     GameManager* gameManager;
     bool coloredGame;
     std::string selectedScreenFile;
