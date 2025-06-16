@@ -79,8 +79,7 @@ std::string GameRecorder::writeResultFile(
 
     if (!out) {
         std::cerr << "Failed to open result file: " << resultFileName << std::endl;
-        // throw error
-        return "Error";
+        throw std::exception();
     }
 
     out << "Shell collisions:\n";
