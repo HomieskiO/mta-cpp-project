@@ -32,12 +32,12 @@ GameManager::GameManager(bool coloredGame, const std::string& screenFile, Player
 void GameManager::startGame() {
 	isRunning = true;
 	gameRecorder.tick = 0;
+	std::vector<Screen> screens;
 	clearScreen();
 	ClearAllObjects();
 
 	// If no screen file was chosen, get the first screen in lexicographic order
 	if (screenFile.empty()) {
-		std::vector<Screen> screens;
 		if (Screen::loadAllScreenFiles(screens) && !screens.empty()) {
 			screenFile = SCREENS_DIR + screens[0].name;
 		}
@@ -45,21 +45,30 @@ void GameManager::startGame() {
 			std::cerr << "No screen files found. Cannot start game.\n";
 		}
 	}
+	for (int i = 0; i < screens.size(); i++) {
+		isRunning = true;
+		playLevel(screenFile);
+	}
+	//playLevel(screenFile);
+}
 
+bool GameManager::playLevel(const std::string& screenFile) {
+	clearScreen();
+	ClearAllObjects();
 	if (!initializeGameObjects(screenFile)) {
 		std::cerr << "Failed to initialize game objects from screen file: " << screenFile << "\n";
+		return false;
 	}
-
 	hideCursor();
 	if (player1Tanks.empty() || player2Tanks.empty()) {
 		drawGameObjects();
 		drawGameInfo();
-		Sleep(1000); // Wait a short time to let player see the initial board and end the round
+		Sleep(1000);
 		gameOver();
-		return;
+		return false;
 	}
-
 	gameLoop();
+	return true;
 }
 
 void GameManager::ClearAllObjects() {
@@ -563,7 +572,6 @@ void GameManager::gameOver() {
 			std::cout << "\tloading next screen " << screens[currentIndex + 1].name << "\n";
 			std::cout << "\tPress any key to continue...\n";
 			_getch();
-			startGame();
 			return;
 		}
 	}

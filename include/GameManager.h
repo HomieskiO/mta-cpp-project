@@ -108,6 +108,7 @@ protected:
     void rotateTanksCannons(std::vector<Tank*> player);
 	void gameLoop();
 	void moveTanks(std::vector<Tank*> player);
+    bool playLevel(const std::string& screenFile);
 
 
 public:
