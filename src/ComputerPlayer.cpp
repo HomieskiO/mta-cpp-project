@@ -5,8 +5,10 @@
 
 // General comment : computer player class  only aims and rotates, all shooting and movement is actually done in GameManager
 
-ComputerPlayer::ComputerPlayer(int x, int y, int color)
+ComputerPlayer::ComputerPlayer(int x, int y, int color, int playerId, int tankId)
     : Tank(x, y, P2_CONTROLS, color) {  // Using P2_CONTROLS as default value
+    this->playerId = playerId;
+    this->tankId = tankId;
 }
 
 bool ComputerPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
@@ -26,14 +28,14 @@ void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
         for (const auto& shell : shells) {
             if (std::abs(shell->getX() - getX()) <= DANGER_DISTANCE &&
                 std::abs(shell->getY() - getY()) <= DANGER_DISTANCE) {
-                moveAwayFromShell(shell);
+                moveAwayFromShell(shell, gameRecorder);
                 return;
             }
         }
     }
     // Second priority: Shoot targets if possible
     if (canShootTarget(opponentTanks, shells)) {
-        aimAtTarget(opponentTanks, shells);
+        aimAtTarget(opponentTanks, shells, gameRecorder);
         return;
 
         // TODO: Third priority will be moving towards opponent
@@ -50,20 +52,35 @@ bool ComputerPlayer::isShellChasing(const std::vector<Shell*>& shells) const {
     return false;
 }
 
-void ComputerPlayer::moveAwayFromShell(const Shell* shell) {
+void ComputerPlayer::moveAwayFromShell(const Shell* shell, GameRecorder& gameRecorder) {
     int dx = getX() - shell->getX();
     int dy = getY() - shell->getY();
 
     // Move in the opposite direction of the shell
+    ActionType action;
     if (std::abs(dx) > std::abs(dy)) {
         setDirection(dx > 0 ? Direction::RIGHT : Direction::LEFT);
+        if (dx > 0) {
+            action = ActionType::DIRECTION_RIGHT;
+        }
+        else {
+            action = ActionType::DIRECTION_LEFT;
+        }
     }
     else {
         setDirection(dy > 0 ? Direction::DOWN : Direction::UP);
+        if (dy > 0) {
+            action = ActionType::DIRECTION_DOWN;
+        }
+        else {
+            action = ActionType::DIRECTION_UP;
+        }
     }
+    gameRecorder.logAction(playerId, tankId, action);
     // TODO: Set movement state as backward or stay as well and not only forward
     // TODO: movement of tanks should avoid mines
     setMovementState(MovementState::FORWARD);
+    gameRecorder.logAction(playerId, tankId, ActionType::MOVE_FORWARD);
     return;
 }
 
@@ -84,15 +101,27 @@ bool ComputerPlayer::canShootTarget(const std::vector<Tank*>& opponentTanks, con
     return false;
 }
 
-void ComputerPlayer::aimAtTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells) {
+void ComputerPlayer::aimAtTarget(const std::vector<Tank*>& opponentTanks, const std::vector<Shell*>& shells, GameRecorder& gameRecorder) {
     for (const auto& shell : shells) {
         if (isShellAimedAtMe(shell)) {
             if (shell->getX() == getX()) {
                 setDirection(shell->getY() < getY() ? Direction::UP : Direction::DOWN);
+                if (shell->getY() < getY()) {
+                    gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_UP);
+                }
+                else {
+                    gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_DOWN);
+                }
                 return;
             }
             if (shell->getY() == getY()) {
                 setDirection(shell->getX() < getX() ? Direction::LEFT : Direction::RIGHT);
+                if (shell->getX() < getX()) {
+                    gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_LEFT);
+                }
+                else {
+                    gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_RIGHT);
+                }
                 return;
             }
         }
@@ -102,10 +131,22 @@ void ComputerPlayer::aimAtTarget(const std::vector<Tank*>& opponentTanks, const 
     for (const auto& opponent : opponentTanks) {
         if (opponent->getX() == getX()) {
             setDirection(opponent->getY() < getY() ? Direction::UP : Direction::DOWN);
+            if (opponent->getY() < getY()) {
+                gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_UP);
+            }
+            else {
+                gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_DOWN);
+            }
             return;
         }
         if (opponent->getY() == getY()) {
             setDirection(opponent->getX() < getX() ? Direction::LEFT : Direction::RIGHT);
+            if (opponent->getX() < getX()) {
+                gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_LEFT);
+            }
+            else {
+                gameRecorder.logAction(playerId, tankId, ActionType::DIRECTION_RIGHT);
+            }
             return;
         }
     }

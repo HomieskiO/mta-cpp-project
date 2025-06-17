@@ -69,6 +69,18 @@ void GameFromFileManager::applyGameStep(const GameStep& step) {
 		case ActionType::STAY:
 			tank->setMovementState(MovementState::STAY);
 			break;
+		case ActionType::DIRECTION_LEFT:
+			tank->setDirection(Direction::LEFT);
+			break;
+		case ActionType::DIRECTION_RIGHT:
+			tank->setDirection(Direction::RIGHT);
+			break;
+		case ActionType::DIRECTION_UP:
+			tank->setDirection(Direction::UP);
+			break;
+		case ActionType::DIRECTION_DOWN:
+			tank->setDirection(Direction::DOWN);
+			break;
 		default:
 			break;
 		}

@@ -15,6 +15,10 @@ enum class ActionType {
     MOVE_BACKWARD,
     SHOOT,
     STAY,
+    DIRECTION_LEFT,
+    DIRECTION_RIGHT,
+    DIRECTION_UP,
+    DIRECTION_DOWN,
     END_GAME
 };
 
