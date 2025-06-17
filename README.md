@@ -8,3 +8,6 @@
 - Colorful game support
 - Shells moving faster than tanks
 - Partial rendering (re printing only unchanged objects)
+- Added sound effects when shooting and hitting
+- 
+- 

@@ -39,10 +39,9 @@ void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
         aimAtTarget(opponentTanks, shells, gameRecorder);
         return;
     }
-
-    // Third priority will be moving towards opponent
-    // TODO: Making it moving forward to prevent game from freezing but need to implement better logic and avoidance of mines and walls
+	//Third priority: Making it moving forward to prevent game from freezing if no shells or targets are present
     setMovementState(MovementState::FORWARD);
+	gameRecorder.logAction(playerId, tankId, ActionType::MOVE_FORWARD);
 }
 
 bool ComputerPlayer::isShellChasing(const std::vector<Shell*>& shells) const {
