@@ -25,6 +25,6 @@ private:
     bool isMyTanksInDirection(const std::vector<Tank*>& myTanks, Direction shootDir) const;
     bool isShellAimedAtMe(const Shell* shell) const;
     bool isInLineWithTarget(const GameObject* target) const;
-    void setDirectionToTarget(const GameObject* target);
+    void setDirectionToTarget(const GameObject* target, GameRecorder& gameRecorder);
     std::vector<Shell*> currentShells; // Store current shells for shouldShoot
 };
