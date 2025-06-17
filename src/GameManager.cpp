@@ -145,17 +145,17 @@ bool GameManager::initializeGameObjects(const std::string& filename) {
 			case '@': mines.push_back(Mine(x, y, mineColor)); break;
 			case '1':
 				if (player1Type == PlayerType::COMPUTER) {
-					player1Tanks.push_back(new ComputerPlayer(x, y, player1Color));
+					player1Tanks.push_back(new ComputerPlayer(x, y, player1Color, PLAYER_1_ID, p1_tank_id));
 				} else {
-					player1Tanks.push_back(new HumanPlayer(x, y, P1_CONTROLS, player1Color, 1, p1_tank_id));
+					player1Tanks.push_back(new HumanPlayer(x, y, P1_CONTROLS, player1Color, PLAYER_1_ID, p1_tank_id));
 				}
 				p1_tank_id++;
 				break;
 			case '2': 
 				if (player2Type == PlayerType::COMPUTER) {
-					player2Tanks.push_back(new ComputerPlayer(x, y, player2Color));
+					player2Tanks.push_back(new ComputerPlayer(x, y, player2Color, PLAYER_2_ID, p2_tank_id));
 				} else {
-					player2Tanks.push_back(new HumanPlayer(x, y, P2_CONTROLS, player2Color, 2, p2_tank_id));
+					player2Tanks.push_back(new HumanPlayer(x, y, P2_CONTROLS, player2Color, PLAYER_2_ID, p2_tank_id));
 				}
 				p2_tank_id++;
 				break;

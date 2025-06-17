@@ -9,6 +9,8 @@ constexpr auto PLAYER_1_COLOR = 4;
 constexpr auto PLAYER_2_COLOR = 1;
 constexpr auto WALL_COLOR = 5;
 constexpr auto MINE_COLOR = 3;
+constexpr int PLAYER_1_ID = 1;
+constexpr int PLAYER_2_ID = 2;
 
 constexpr auto SCREENS_DIR = "../screens/";
 

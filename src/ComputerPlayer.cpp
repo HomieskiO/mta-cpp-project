@@ -5,8 +5,10 @@
 
 // General comment : computer player class  only aims and rotates, all shooting and movement is actually done in GameManager
 
-ComputerPlayer::ComputerPlayer(int x, int y, int color)
+ComputerPlayer::ComputerPlayer(int x, int y, int color, int playerId, int tankId)
     : Tank(x, y, P2_CONTROLS, color) {  // Using P2_CONTROLS as default value
+    this->playerId = playerId;
+    this->tankId = tankId;
 }
 // Only shoot if we can shoot and have a valid target  
 bool ComputerPlayer::shouldShoot(const std::vector<Tank*>& opponentTanks) {
@@ -23,7 +25,7 @@ void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
         for (const auto& shell : shells) {
             if (std::abs(shell->getX() - getX()) <= DANGER_DISTANCE &&
                 std::abs(shell->getY() - getY()) <= DANGER_DISTANCE) {
-                moveAwayFromShell(shell);
+                moveAwayFromShell(shell, gameRecorder);
                 return;
             }
         }
@@ -33,7 +35,7 @@ void ComputerPlayer::makeMove(const std::vector<Shell*>& shells,
     }
     // Second priority: Shoot targets if possible
     if (canShootTarget(opponentTanks, shells)) {
-        aimAtTarget(opponentTanks, shells);
+        aimAtTarget(opponentTanks, shells, gameRecorder);
         return;
     }
 
@@ -52,9 +54,10 @@ bool ComputerPlayer::isShellChasing(const std::vector<Shell*>& shells) const {
     return false;
 }
 
-void ComputerPlayer::moveAwayFromShell(const Shell* shell) {
+void ComputerPlayer::moveAwayFromShell(const Shell* shell, GameRecorder& gameRecorder) {
     int dx = getX() - shell->getX();
     int dy = getY() - shell->getY();
+
 
     bool moveHorizontally = std::abs(dx) > std::abs(dy);
     Direction newDirection = moveHorizontally ?
